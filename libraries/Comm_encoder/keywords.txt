@@ -1,0 +1,28 @@
+#######################################
+# Syntax Coloring Map For Comm_encoder
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Comm_encoder	KEYWORD1
+Trim_state      KEYWORD1
+decode_msg      KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+encode_msg	KEYWORD2
+decode_msg	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+mov_bal     LITERAL1
+trm_tab     LITERAL1
