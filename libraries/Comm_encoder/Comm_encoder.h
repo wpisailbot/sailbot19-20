@@ -5,25 +5,39 @@
 #ifndef Comm_encoder_h
 #define Comm_encoder_h
 #include <Arduino.h>
+#include <Client.h>
+#include <WiFiEsp.h>
 
 /* trim tab states*/
-enum Trim_state {OFF = 0, NO_AP = 1, NO_PGM_PORT = 2, MIN_LIFT = 3, 
-  MAX_LIFT_PORT = 4, MAX_LIFT_STBD = 5,
-  MAX_DRAG_PORT = 6, MAX_DRAG_STBD = 7};
-/* keywords */
-const String mov_bal = "mov_bal";
-const String trm_tab = "trm_tab";
+enum Trim_state {MIN_LIFT = 0, STBD_TACK = 1, PORT_TACK = 2,
+  MAX_DRAG_STBD = 3, MAX_DRAG_PORT = 4, MAN_CTRL = 5};
 
+const String trm_stat = "trm_stat";
+const String man_ctrl = "man_ctrl";
 
 /* msg structure */
-struct msg
+struct msg_t
 {
     int setting;
     String keyword;
+}; 
+
+#pragma pack(1)
+struct rigid_msg_t
+{
+  int16_t state;
+  int16_t curHeelAngle;
+  int16_t maxHeelAngle;
+  int16_t controlAngle;
+  int8_t vIn;
 };
+#pragma pop
 
 
-String encode_msg(msg message);
-msg decode_msg(String message);
+String encode_msg(msg_t message);
+msg_t decode_msg(String message);
+void send_packet(Client * client, rigid_msg_t packet);
+void read_packet(Client * client, rigid_msg_t * packet);
+
 
 #endif
