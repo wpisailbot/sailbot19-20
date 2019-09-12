@@ -3,3 +3,4 @@ Transfer the libraries you require to `Arduino/libraries`. To verify, open the A
 
 ## 3rd party library dependencies
 - [WiFiEsp](https://github.com/bportaluri/WiFiEsp)
+- [Nanopb](https://github.com/nanopb/nanopb)
