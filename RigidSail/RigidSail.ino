@@ -5,17 +5,17 @@
 #include "Comm_encoder.h"
 #include "Constants.h"
 
-//Pins for devices
-#define potPin A19   //38
-#define servoPin 6
-#define led1Pin 7   //white
-#define led2Pin 8   //white
-#define wifiLED 5   //yellow
-#define powerLED 4  //red
-#define vInPin A2
-#define RX2pin 9    //ESP8266
-#define TX2pin 10   //ESP8266
-#define onBoardLED 13
+// //Pins for devices
+// #define potPin A19   //38
+// #define servoPin 6
+// #define led1Pin 7   //white
+// #define led2Pin 8   //white
+// #define wifiLED 5   //yellow
+// #define powerLED 4  //red
+// #define vInPin A2
+// #define RX2pin 9    //ESP8266
+// #define TX2pin 10   //ESP8266
+// #define onBoardLED 13
 
 // Servo variables
 int control = 0;      //to enable direct control over tab angle
@@ -363,45 +363,45 @@ void servoControl() {
 
 void update_vehicle_state()
 {
-//  // if there's data available, read a rx_packet
-//  //Serial.println("Rx/Tx");
-//  int packetSize = Udp.parsePacket();
-//  if (packetSize) {
-//    Serial.print("Received rx_packet of size ");
-//    Serial.println(packetSize);
-//    Serial.print("From ");
-//    IPAddress remoteIp = Udp.remoteIP();
-//    Serial.print(remoteIp);
-//    Serial.print(", port ");
-//    Serial.println(Udp.remotePort());
-//
-//    // read the rx_packet into rx_packetBufffer
-//    int len = Udp.read(packetBuffer, 255);
-//    if (len > 0) {
-//      packetBuffer[len] = 0;
-//    }
-//
-//    rx_packet = decode_msg(packetBuffer);
-//    Serial.println("Contents:");
-//    print_packet(rx_packet);
-//
-//    // send a reply, to the IP address and port that sent us the rx_packet we received
-//    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-//    Udp.write(encode_msg(tx_packet));
-//    Udp.endPacket();
-//  }
-//
-//  if(!ack_connected){
-//    ack_connect();
-//  }
+  // if there's data available, read a rx_packet
+  //Serial.println("Rx/Tx");
+  int packetSize = Udp.parsePacket();
+  if (packetSize) {
+    Serial.print("Received rx_packet of size ");
+    Serial.println(packetSize);
+    Serial.print("From ");
+    IPAddress remoteIp = Udp.remoteIP();
+    Serial.print(remoteIp);
+    Serial.print(", port ");
+    Serial.println(Udp.remotePort());
+
+    // read the rx_packet into rx_packetBufffer
+    int len = Udp.read(packetBuffer, 255);
+    if (len > 0) {
+      packetBuffer[len] = 0;
+    }
+
+    rx_packet = decode_msg(packetBuffer);
+    Serial.println("Contents:");
+    print_packet(rx_packet);
+
+    // send a reply, to the IP address and port that sent us the rx_packet we received
+    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+    Udp.write(encode_msg(tx_packet));
+    Udp.endPacket();
+  }
+
+  if(!ack_connected){
+    ack_connect();
+  }
 }
 
 void ack_connect(){
-//  Udp.beginPacket(hullIP, Udp.remotePort());
-//  Udp.write("henlo?");
-//  Udp.endPacket();
-//  Serial.println("spam");
-//
-//  int packetSize = Udp.parsePacket();
-//  ack_connected = packetSize > 0;
+  Udp.beginPacket(hullIP, Udp.remotePort());
+  Udp.write("henlo?");
+  Udp.endPacket();
+  Serial.println("spam");
+
+  int packetSize = Udp.parsePacket();
+  ack_connected = packetSize > 0;
 }
