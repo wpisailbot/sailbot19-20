@@ -42,12 +42,13 @@ int state = 0;
 void setup() {
   pinMode(hallPortPin, INPUT);
   pinMode(hallStbdPin, INPUT);
-  pinMode(PWM1Pin, INPUT);
-  pinMode(PWM2Pin, INPUT);
-  pinMode(PWM3Pin, INPUT);
-  pinMode(PWM4Pin, INPUT);
-  pinMode(PWM5Pin, INPUT);
-  pinMode(PWM6Pin, INPUT);
+  
+  pinMode(PWM1Pin, INPUT_PULLUP);
+  pinMode(PWM2Pin, INPUT_PULLUP);
+  pinMode(PWM3Pin, INPUT_PULLUP);
+  pinMode(PWM4Pin, INPUT_PULLUP);
+  pinMode(PWM5Pin, INPUT_PULLUP);
+  pinMode(PWM6Pin, INPUT_PULLUP);
 
   Serial.begin(9600);
   while (!Serial) {
@@ -72,12 +73,12 @@ void setup() {
   Serial.println(localPort);
 
   
-  attachInterrupt(digitalPinToInterrupt(PWM1Pin), rising_PWM1, RISING);
-  attachInterrupt(digitalPinToInterrupt(PWM2Pin), rising_PWM2, RISING);
-  attachInterrupt(digitalPinToInterrupt(PWM3Pin), rising_PWM3, RISING);
-  attachInterrupt(digitalPinToInterrupt(PWM4Pin), rising_PWM4, RISING);
-  attachInterrupt(digitalPinToInterrupt(PWM5Pin), rising_PWM5, RISING);
-  attachInterrupt(digitalPinToInterrupt(PWM6Pin), rising_PWM6, RISING);
+  attachInterrupt(PWM1Pin, rising_PWM1, RISING);
+  attachInterrupt(PWM2Pin, rising_PWM2, RISING);
+  attachInterrupt(PWM3Pin, rising_PWM3, RISING);
+  attachInterrupt(PWM4Pin, rising_PWM4, RISING);
+  attachInterrupt(PWM5Pin, rising_PWM5, RISING);
+  attachInterrupt(PWM6Pin, rising_PWM6, RISING);
 }
 
 void loop() {
@@ -92,6 +93,18 @@ void loop() {
   }
 
   read_hall_effect();
+  Serial.print("  PWM1:");
+  Serial.print(PWM1_value);
+  Serial.print("  PWM2:");
+  Serial.print(PWM2_value);
+  Serial.print("  PWM3:");
+  Serial.print(PWM3_value);
+  Serial.print("  PWM4:");
+  Serial.print(PWM4_value);
+  Serial.print("  PWM5:");
+  Serial.print(PWM5_value);
+  Serial.print("  PWM6:");
+  Serial.println(PWM6_value);
 }
 
 
@@ -161,71 +174,71 @@ void read_hall_effect(){
 void rising_PWM1() {
   attachInterrupt(PWM1Pin, falling_PWM1, FALLING);
   PWM1_prev_time = micros();
+  //Serial.println("PWM1 rising");
 }
  
 void falling_PWM1() {
   attachInterrupt(PWM1Pin, rising_PWM1, RISING);
   PWM1_value = micros()-PWM1_prev_time;
-  Serial.print("  PWM1:");
-  Serial.println(PWM1_value);
+  //Serial.println("PWM1 falling");
 }
 
 void rising_PWM2() {
   attachInterrupt(PWM2Pin, falling_PWM2, FALLING);
   PWM2_prev_time = micros();
+  //Serial.println("PWM2 rising");
 }
  
 void falling_PWM2() {
   attachInterrupt(PWM2Pin, rising_PWM2, RISING);
   PWM2_value = micros()-PWM2_prev_time;
-  Serial.print("  PWM2:");
-  Serial.println(PWM2_value);
+  //Serial.println("PWM2 falling");
 }
 
 void rising_PWM3() {
   attachInterrupt(PWM3Pin, falling_PWM3, FALLING);
   PWM3_prev_time = micros();
+  //Serial.println("PWM3 rising");
 }
  
 void falling_PWM3() {
   attachInterrupt(PWM3Pin, rising_PWM3, RISING);
   PWM3_value = micros()-PWM3_prev_time;
-  Serial.print("  PWM3:");
-  Serial.println(PWM3_value);
+  //Serial.println("PWM3 falling");
 }
 
 void rising_PWM4() {
   attachInterrupt(PWM4Pin, falling_PWM4, FALLING);
   PWM4_prev_time = micros();
+  //Serial.println("PWM4 rising");
 }
  
 void falling_PWM4() {
   attachInterrupt(PWM4Pin, rising_PWM4, RISING);
   PWM4_value = micros()-PWM4_prev_time;
-  Serial.print("  PWM4:");
-  Serial.println(PWM4_value);
+  //Serial.println("PWM4 falling");
 }
 
 void rising_PWM5() {
   attachInterrupt(PWM5Pin, falling_PWM5, FALLING);
   PWM5_prev_time = micros();
+  //Serial.println("PWM5 rising");
 }
  
 void falling_PWM5() {
   attachInterrupt(PWM5Pin, rising_PWM5, RISING);
   PWM5_value = micros()-PWM5_prev_time;
-  Serial.print("  PWM5:");
-  Serial.println(PWM5_value);
+  //Serial.println("PWM5 falling");
 }
 
 void rising_PWM6() {
   attachInterrupt(PWM6Pin, falling_PWM6, FALLING);
   PWM6_prev_time = micros();
+  //Serial.println("PWM6 rising");
 }
  
 void falling_PWM6() {
   attachInterrupt(PWM6Pin, rising_PWM6, RISING);
   PWM6_value = micros()-PWM6_prev_time;
-  Serial.print("  PWM6:");
-  Serial.println(PWM6_value);
+  //Serial.println("PWM6 falling");
 }

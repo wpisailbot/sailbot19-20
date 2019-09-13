@@ -29,13 +29,14 @@ const int onBoardLED = 13;
 const int hallPortPin = 2;
 const int hallStbdPin = 3;
 
-const int PWM1Pin = 9;
-const int PWM2Pin = 8;
-const int PWM3Pin = 7;
-const int PWM4Pin = 6;
-const int PWM5Pin = 5;
-const int PWM6Pin = 4;
+const int PWM1Pin = digitalPinToInterrupt(2);
+const int PWM2Pin = digitalPinToInterrupt(3);
+const int PWM3Pin = digitalPinToInterrupt(18);
+const int PWM4Pin = digitalPinToInterrupt(19);
+const int PWM5Pin = digitalPinToInterrupt(20);
+const int PWM6Pin = digitalPinToInterrupt(21);
 const float PWM_period = 20.0; //ms
+//PWM range 980 - 2004
 
 /*  COMMS   */
 const char ack_buffer[] = "ACK"; // When comms worked out, change this to a protobuf with the ip of the device replying to
