@@ -10,13 +10,9 @@
 #include <EthernetUdp.h>
 
 uint8_t tx_buffer[128];
-
 vehicle_state tx_message;
 
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-
 EthernetServer server(localPort);
-//EthernetUDP Udp;
 
 bool handshake = false;
 
@@ -27,7 +23,7 @@ void setup()
     ; // wait for serial port to connect. Needed for native USB port only
     }
     // Set up the server on the arduino
-    Ethernet.begin(mac, hullIP);
+    Ethernet.begin(boatMac, hullIP);
 
     // Check for Ethernet hardware present
     if (Ethernet.hardwareStatus() == EthernetNoHardware) {
@@ -39,9 +35,9 @@ void setup()
 
     server.begin();
 
-    Serial.print("server is at ");
-    Serial.println(Ethernet.localIP());
-    Serial.print("UDP communication is located at port ");
+    Serial.print("  Server IP: ");
+    Serial.print(Ethernet.localIP());
+    Serial.print("  Comm port: ");
     Serial.println(localPort);
 }
 void loop() {
@@ -55,7 +51,7 @@ void update_vehicle_state()
     if(!client.connected()){
       Serial.println("Client disconnected!");
       // Set up the server on the arduino
-      Ethernet.begin(mac, hullIP);
+      Ethernet.begin(boatMac, hullIP);
   
       // Check for Ethernet hardware present
       if (Ethernet.hardwareStatus() == EthernetNoHardware) {

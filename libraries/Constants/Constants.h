@@ -25,10 +25,24 @@ const int RX2pin    = 9;    //ESP8266
 const int TX2pin    = 10;   //ESP8266
 const int onBoardLED = 13;
 
+/*  BOAT    */
+const int hallPortPin = 2;
+const int hallStbdPin = 3;
+
+const int PWM1Pin = 9;
+const int PWM2Pin = 8;
+const int PWM3Pin = 7;
+const int PWM4Pin = 6;
+const int PWM5Pin = 5;
+const int PWM6Pin = 4;
+const float PWM_period = 20.0; //ms
+
 /*  COMMS   */
 const char ack_buffer[] = "ACK"; // When comms worked out, change this to a protobuf with the ip of the device replying to
 unsigned int localPort = 8888;
 IPAddress hullIP(192, 168, 0, 21);  // Hull's IP address
 IPAddress rigidIP(192, 168, 0, 25); // RigidSail's IP address
+byte rigidMac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEA};
+byte boatMac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 
 #endif

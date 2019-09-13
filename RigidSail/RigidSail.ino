@@ -2,8 +2,13 @@
 #include <WiFiEspUdp.h>
 #include <Servo.h>
 #include "SoftwareSerial.h"
-#include "Comm_encoder.h"
 #include "Constants.h"
+
+#include "pb.h"
+#include "pb_common.h"
+#include "pb_encode.h"
+#include "pb_decode.h"
+#include "test.pb.h"
 
 // //Pins for devices
 // #define potPin A19   //38
@@ -22,9 +27,7 @@ int control = 0;      //to enable direct control over tab angle
 int lift = 0;         //0 to produce no lift 1 to produce lift
 int drag = 0;
 int windSide = 0;     //0 for wind from port 1 for wind from starboard
-bool manual = false;
 
-int heelIn;           //reading from hull heel sensor
 int heelAngle = 0;    //mapped heel angle, 0 degrees is straight up 90 would be on its side
 int maxHeelAngle = 30;//settable max heel angle
 
@@ -38,14 +41,11 @@ int tabAngle = 0;     //angle of tab relative to centered being 0
 
 int count = 0;        //count to have leds blink
 
-int state = MIN_LIFT;
+int state = TRIM_STATE_MIN_LIFT;
 
-int printing = 0;
-int udpConnection = 0;
-int connectionCount = 0;
+bool connection = false;
 
 int ledState = LOW;
-unsigned long previousMillis = 0;
 volatile unsigned long blinkCount = 0; // use volatile for shared variables
 
 int servoAngle;
@@ -62,26 +62,19 @@ bool ack_connected = false;
 
 // Wifi variables
 SoftwareSerial ESPSerial(RX2pin, TX2pin); // RX2, TX2
-
 char ssid[] = "sailbot";        // Name of the hull network
 char pass[] = "Passphrase123";  // Password to hull network
 int status = WL_IDLE_STATUS;    // the Wifi radio's status
 
-IPAddress hullIP(192, 168, 0, 21);  // Hull's IP address
+WiFiEspClient client;
 
-unsigned long lastConnectionTime = 0;         // last time you connected to the server, in milliseconds
-const unsigned long postingInterval = 10000L; // delay between updates, in milliseconds
+int missed_msgs = 0;
 
-// Initialize the Ethernet client object
-char packetBuffer[255];          // buffer to hold incoming packet
+volatile uint8_t rx_buffer[128];
+volatile vehicle_state rx_message;
 
-vehicle_state_t rx_packet;
-vehicle_state_t tx_packet = {5, 4, 3, 2, 1, 0};
-vehicle_state_t * tx_packet_ptr = &tx_packet;
-
-WiFiEspUDP Udp;
-
-
+volatile uint8_t tx_buffer[128];
+volatile vehicle_state tx_message;
 
 void setup()
 {
@@ -91,15 +84,6 @@ void setup()
 
 void loop()
 {
-  // WIFI
-  // if there are incoming bytes available
-  // from the server, read them and print them
-  // while (client.available()) {
-  //   Serial.println("Client available");
-  //   char c = client.read();
-  //   Serial.write(c);
-  // }
-
   // Read from Serial Terminal for state -- testing only
   if (Serial.available() > 0) {
     // read the incoming byte:
@@ -108,13 +92,6 @@ void loop()
     Serial.print("State:");
     Serial.println(state);
   }
-
-  // WIFI
-  // if 10 seconds have passed since your last connection,
-  // then connect again and send data
-  // if (millis() - lastConnectionTime > postingInterval) {
-  //   //httpRequest();
-  // }
 
   vIn = analogRead(vInPin);
 
@@ -126,45 +103,55 @@ void loop()
   }
   sentAttackAngle = (360 + windAngle) % 360;
 
-  stateSet((Trim_state)state);
+  stateSet((_TRIM_STATE)state);
+
+  if(!connection){
+    recoverConnection();
+  }
 }
 
 void initComms()
 {
-  // initialize serial for debugging
-  Serial.begin(115200);
-  // initialize serial for ESP module
-  // ESPSerial.begin(115200);
-  // // initialize ESP module
-  // WiFi.init(&ESPSerial);
+    Serial.begin(115200);
+    // initialize serial for ESP module
+    ESPSerial.begin(115200);
+    // initialize ESP module
+    WiFi.init(&ESPSerial);
 
-  // // check for the presence of the shield
-  // if (WiFi.status() == WL_NO_SHIELD) {
-  //   Serial.println("WiFi shield not present");
-  //   // don't continue
-  //   while (true);
-  // }
+    // check for the presence of the shield
+    if (WiFi.status() == WL_NO_SHIELD) {
+        Serial.println("WiFi shield not present");
+        // don't continue
+        while (true);
+    }
 
-  // // attempt to connect to WiFi network
-  // while ( status != WL_CONNECTED) {
-  //   Serial.print("Attempting to connect to WPA SSID: ");
-  //   Serial.println(ssid);
-  //   // Connect to WPA/WPA2 network
-  //   status = WiFi.begin(ssid, pass);
-  // }
+    // attempt to connect to WiFi network
+    while ( status != WL_CONNECTED) {
+        Serial.print("Attempting to connect to WPA SSID: ");
+        Serial.println(ssid);
+        // Connect to WPA/WPA2 network
+        status = WiFi.begin(ssid, pass);
+    }
 
-  // // you're connected now, so print out the data
-  // Serial.println("Connected to wifi");
-  // printWifiStatus();
+    // you're connected now, so print out the data
+    Serial.println("Connected to wifi");
+    printWifiStatus();
 
-  // Serial.println("\nStarting connection to server...");
-  // // if you get a connection, report back via serial:
-  // Udp.begin(localPort);
-  
-  // Serial.print("Listening on port ");
-  // Serial.println(localPort);
+    Serial.println("\nStarting connection to server...");
+    // if you get a connection, report back via serial:
+    //Udp.begin(localPort);
 
-  // udpConnection = 1;
+    if(client.connect(hullIP, localPort)){
+      Serial.println("Connected to server");
+      client.print("Host: ");
+      client.println(hullIP);
+      client.println("Connection: keep-alive");
+      client.println();
+      connection = true;
+    }
+    
+    Serial.print("Listening on port ");
+    Serial.println(localPort);  
 }
 
 
@@ -183,11 +170,26 @@ void initServo()
 
   LEDtimer.begin(blinkState, 916682);
   servoTimer.begin(servoControl, 50000);
-  //commsTimer.begin(update_vehicle_state, 100000000);
+  commsTimer.begin(update_vehicle_state, 100000);
 
   servo.write(SERVO_CTR); //in place so lift starts at 0 degrees or neutral state
 
   digitalWrite(powerLED, HIGH);// turn on power led
+}
+
+
+void recoverConnection(){
+    client.stop();
+    Serial.println("Not connected");
+    if(client.connect(hullIP, localPort)){
+      connection = true;
+      Serial.println("Connected to server");
+      client.print("Host: ");
+      client.println(hullIP);
+      client.println("Connection: keep-alive");
+      client.println();
+      commsTimer.begin(update_vehicle_state, 100000);
+    }
 }
 
 
@@ -212,39 +214,39 @@ void printWifiStatus()
 }
 
 
-void stateSet(Trim_state state) {
+void stateSet(_TRIM_STATE state) {
   switch (state)
   {
-    case MIN_LIFT:
+    case TRIM_STATE_MIN_LIFT:
       control = 0;
       lift = 0;
       drag = 0;
       break;
-    case STBD_TACK:
+    case TRIM_STATE_STBD_TACK:
       control = 0;
       lift = 1;
       drag = 0;
       windSide = 1;
       break;
-    case PORT_TACK:
+    case TRIM_STATE_PORT_TACK:
       control = 0;
       lift = 1;
       drag = 0;
       windSide = 0;
       break;
-    case MAX_DRAG_STBD:
+    case TRIM_STATE_MAX_DRAG_STBD:
       control = 0;
       lift = 0;
       drag = 1;
       windSide = 1;
       break;
-    case MAX_DRAG_PORT:
+    case TRIM_STATE_MAX_DRAG_PORT:
       control = 0;
       lift = 0;
       drag = 1;
       windSide = 0;
       break;
-    case MAN_CTRL:
+    case TRIM_STATE_MAN_CTRL:
       control = 1;
       lift = 0;
       drag = 0;
@@ -263,7 +265,7 @@ void blinkState() {
   } else {
     ledState = LOW;
   }
-  if (!udpConnection) {
+  if (!connection) {
     digitalWrite(wifiLED, ledState);
   }
   if (lift) {
@@ -359,49 +361,67 @@ void servoControl() {
   }
 }
 
-
-
 void update_vehicle_state()
 {
   // if there's data available, read a rx_packet
-  //Serial.println("Rx/Tx");
-  int packetSize = Udp.parsePacket();
-  if (packetSize) {
-    Serial.print("Received rx_packet of size ");
-    Serial.println(packetSize);
-    Serial.print("From ");
-    IPAddress remoteIp = Udp.remoteIP();
-    Serial.print(remoteIp);
-    Serial.print(", port ");
-    Serial.println(Udp.remotePort());
+  int bytes = client.available();
+  Serial.print("  Missed msgs:");
+  Serial.println(missed_msgs);
+  missed_msgs++;
+  if (bytes > 0) {
+//    Serial.print("Received rx_packet of size ");
+//    Serial.println(bytes);
+//    Serial.print("From ");
+//    Serial.print(client.remoteIP());
+//    Serial.print(", port ");
+//    Serial.println(localPort);
+    if(client.remoteIP() == hullIP){
+      missed_msgs = 0;
+      for(int i = 0; i < bytes; i++){
+        rx_buffer[i] = (uint8_t)client.read();
+      }
+      
+      rx_message = vehicle_state_init_zero;
+      
+      pb_istream_t stream = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
+      bool status = pb_decode(&stream, vehicle_state_fields, &rx_message);
+   
+      if (!status)
+      {
+          Serial.println("Failed to decode");
+          return;
+      }
+      
+      Serial.print("  State:");
+      Serial.print(rx_message.state);
+      Serial.print("  curAngle:");
+      Serial.print(rx_message.curHeelAngle);
+      Serial.print("  maxAngle:");
+      Serial.print(rx_message.maxHeelAngle);
+      Serial.print("  ControlAngle:");
+      Serial.print(rx_message.controlAngle);
+      Serial.print("  WindAngle:");
+      Serial.print(rx_message.windAngle);
+      Serial.print("  vIn:");
+      Serial.print(rx_message.vIn);
+      Serial.println();
 
-    // read the rx_packet into rx_packetBufffer
-    int len = Udp.read(packetBuffer, 255);
-    if (len > 0) {
-      packetBuffer[len] = 0;
+      // Transfer to local variables - not necessary, just to avoid errors.
+      state = rx_message.state;
+      heelAngle = rx_message.curHeelAngle;
+      maxHeelAngle = rx_message.maxHeelAngle;
+      controlAngle = rx_message.controlAngle;
+
+    } else {
+      //Serial.println("Unknown device!");
+      client.flush();
+      missed_msgs++;
     }
-
-    rx_packet = decode_msg(packetBuffer);
-    Serial.println("Contents:");
-    print_packet(rx_packet);
-
-    // send a reply, to the IP address and port that sent us the rx_packet we received
-    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-    Udp.write(encode_msg(tx_packet));
-    Udp.endPacket();
   }
-
-  if(!ack_connected){
-    ack_connect();
+  if(missed_msgs > 10){
+    client.stop();
+    Serial.println("Reconnecting client...");
+    connection = false;
+    commsTimer.end();
   }
-}
-
-void ack_connect(){
-  Udp.beginPacket(hullIP, Udp.remotePort());
-  Udp.write("henlo?");
-  Udp.endPacket();
-  Serial.println("spam");
-
-  int packetSize = Udp.parsePacket();
-  ack_connected = packetSize > 0;
 }
