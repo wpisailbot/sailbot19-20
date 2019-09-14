@@ -26,23 +26,23 @@ void setup()
 void loop()
 {
     /*   Use below code to find wind vein center and direction   */
-    potAngle = analogRead(potpin);
-    Serial.print("  Wind Vein Angle:");
-    Serial.println(potAngle);
+//    potAngle = analogRead(potpin);
+//    Serial.print("  Wind Vein Angle:");
+//    Serial.println(potAngle);
 
     /*   Use below code to find trim tab center and bounds   */
-    // while (Serial.available()) {
-    //     char c = Serial.read();  //gets one byte from serial buffer
-    //     readString += c; //makes the string readString
-    //     delay(2);  //slow looping to allow buffer to fill with next character
-    // }
+     while (Serial.available()) {
+         char c = Serial.read();  //gets one byte from serial buffer
+         readString += c; //makes the string readString
+         delay(2);  //slow looping to allow buffer to fill with next character
+     }
 
-    // if (readString.length() >0) {
-    //     Serial.println(readString);  //so you can see the captured string
-    //     int n = readString.toInt();  //convert readString into a number
+     if (readString.length() >0) {
+         Serial.println(readString);  //so you can see the captured string
+         int n = readString.toInt();  //convert readString into a number
 
-    //     servo.write(n);
+         servo.write(n);
 
-    //     readString=""; //empty for next input
-    // }
+         readString=""; //empty for next input
+     }
 }

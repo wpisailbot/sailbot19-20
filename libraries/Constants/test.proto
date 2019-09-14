@@ -18,4 +18,6 @@ message vehicle_state {
     uint32 controlAngle = 4;
     uint32 windAngle = 5;
     uint32 vIn = 6;
+    uint32 hallPortTrip = 8;
+    uint32 hallStbdTrip = 9; 
 }

@@ -4,9 +4,9 @@
 
 /*  RIGID SAIL   */
 /* Trim servo */
-const int SERVO_UP_LIM = 30;
+const int SERVO_LO_LIM = 30;
 const int SERVO_CTR    = 115;
-const int SERVO_LO_LIM = 180;
+const int SERVO_HI_LIM = 180;
 /* Wind vein*/
 const int POT_HEADWIND = 463;
 const bool POT_CLOCKWISE  = true;
@@ -26,16 +26,18 @@ const int TX2pin    = 10;   //ESP8266
 const int onBoardLED = 13;
 
 /*  BOAT    */
-const int hallPortPin = 2;
-const int hallStbdPin = 3;
+const int hallPortPin = 4;
+const int hallStbdPin = 5;
 
-const int PWM1Pin = digitalPinToInterrupt(2);
-const int PWM2Pin = digitalPinToInterrupt(3);
-const int PWM3Pin = digitalPinToInterrupt(18);
-const int PWM4Pin = digitalPinToInterrupt(19);
-const int PWM5Pin = digitalPinToInterrupt(20);
-const int PWM6Pin = digitalPinToInterrupt(21);
-const float PWM_period = 20.0; //ms
+const int PWM1Pin = digitalPinToInterrupt(2); // state 1
+const int PWM2Pin = digitalPinToInterrupt(3); // ballast
+const int PWM3Pin = digitalPinToInterrupt(20); // rudder
+const int PWM4Pin = digitalPinToInterrupt(21); 
+const int PWM5Pin = digitalPinToInterrupt(19); // manual control
+const int PWM6Pin = digitalPinToInterrupt(18); // state 2
+
+const int HERO_pin1 = 9; // TODO:NEED TO UPDATE
+const int HERO_pin2 = 10; // TODO:NEED TO UPDATE
 //PWM range 980 - 2004
 
 /*  COMMS   */

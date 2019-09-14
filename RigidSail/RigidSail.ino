@@ -404,6 +404,10 @@ void update_vehicle_state()
       Serial.print(rx_message.windAngle);
       Serial.print("  vIn:");
       Serial.print(rx_message.vIn);
+      Serial.print(" HallPort:");
+      Serial.print(rx_message.hallPortTrip);
+      Serial.print(" HallStbd:");
+      Serial.print(rx_message.hallPortTrip);
       Serial.println();
 
       // Transfer to local variables - not necessary, just to avoid errors.
