@@ -1,3 +1,10 @@
+/**
+ * @file FindNeutralTrimState.ino
+ * @author Irina Lavryonova (ilavyonova@wpi.edu)
+ * @brief Code that makes it simple to find the wind vein and trim tab center positions, useful for calibrating both
+ * @version 0.1
+ * @date 2019-10-05
+ */
 #include <Servo.h>
 
 //Pins for devices

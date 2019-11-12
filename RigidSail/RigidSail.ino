@@ -1,5 +1,12 @@
+/**
+ * @file RigidSail.ino
+ * @author Irina Lavryonova (ilavryonova@wpi.edu)
+ * @brief Code running the Teensy 3.6 controlling the trim tab
+ * @version 0.1
+ * @date 2019-11-11
+ */
 #include <WiFiEsp.h>
-#include <WiFiEspUdp.h>
+#include <WiFiEspClient.h>
 #include <Servo.h>
 #include "SoftwareSerial.h"
 #include "Constants.h"
@@ -8,191 +15,189 @@
 #include "pb_common.h"
 #include "pb_encode.h"
 #include "pb_decode.h"
-#include "test.pb.h"
+#include "comms.pb.h"
 
-// //Pins for devices
-// #define potPin A19   //38
-// #define servoPin 6
-// #define led1Pin 7   //white
-// #define led2Pin 8   //white
-// #define wifiLED 5   //yellow
-// #define powerLED 4  //red
-// #define vInPin A2
-// #define RX2pin 9    //ESP8266
-// #define TX2pin 10   //ESP8266
-// #define onBoardLED 13
-
-// Servo variables
-int control = 0;      //to enable direct control over tab angle
-int lift = 0;         //0 to produce no lift 1 to produce lift
-int drag = 0;
-int windSide = 0;     //0 for wind from port 1 for wind from starboard
-
-int heelAngle = 0;    //mapped heel angle, 0 degrees is straight up 90 would be on its side
-int maxHeelAngle = 30;//settable max heel angle
-
-int angleIn;          //reading from wind direction sensor on the front of the sail
-int windAngle;  //mapped value from wind sensor
-int sentAttackAngle;  //value mapped to correct sending format
-
-int controlAngle = 0; //manual angle set by boat
-
-int tabAngle = 0;     //angle of tab relative to centered being 0
-
-int count = 0;        //count to have leds blink
-
-int state = TRIM_STATE_MIN_LIFT;
-
-bool connection = false;
-
-int ledState = LOW;
-volatile unsigned long blinkCount = 0; // use volatile for shared variables
-
-int servoAngle;
-
-int vIn = 0;
-
-IntervalTimer LEDtimer;
-IntervalTimer servoTimer;
-IntervalTimer commsTimer;
-
+// Wind servo variables
+volatile int windAngle;       // Mapped reading from wind direction sensor on the front of the sail
 Servo servo;
 
-bool ack_connected = false;
+// Debugging variables
+volatile int ledState = LOW;
+volatile int vIn = 0;         // Battery voltage
+
+// Interrupt variables
+IntervalTimer LEDtimer;
+IntervalTimer servoTimer;
+//IntervalTimer commsTimer; // TODO: try reintroducing the timer so that we get the updates on a clock
 
 // Wifi variables
 SoftwareSerial ESPSerial(RX2pin, TX2pin); // RX2, TX2
-char ssid[] = "sailbot";        // Name of the hull network
-char pass[] = "Passphrase123";  // Password to hull network
-int status = WL_IDLE_STATUS;    // the Wifi radio's status
-
+char ssid[] = "sailbot";                  // Name of the hull network
+char pass[] = "Passphrase123";            // Password to hull network
+int status = WL_IDLE_STATUS;              // the Wifi radio's status
 WiFiEspClient client;
 
+// WiFi debug variables
+volatile bool connection = false;
 int missed_msgs = 0;
+unsigned long lastConnectionTime = 0;         // last time you connected to the server, in milliseconds
+const unsigned long postingInterval = 5L; // delay between updates, in milliseconds
 
+// Protobuf variables
 volatile uint8_t rx_buffer[128];
-volatile vehicle_state rx_message;
+vessel_state rx_message;
 
-volatile uint8_t tx_buffer[128];
-volatile vehicle_state tx_message;
 
+
+/**
+ * @brief Sets up the Teensy
+ * Required method
+ */
 void setup()
 {
+  // turn on power led
+  pinMode(powerLED, OUTPUT);
+  digitalWrite(powerLED, HIGH);
+
+  // Init comms and servo
   initComms();
   initServo();
 }
 
+
+
+/**
+ * @brief Everything in this method gets called repeatedly
+ * Required method
+ */
 void loop()
 {
-  // Read from Serial Terminal for state -- testing only
-  if (Serial.available() > 0) {
-    // read the incoming byte:
-    state = Serial.read() - 48;
-
-    Serial.print("State:");
-    Serial.println(state);
-  }
-
+  // Read battery voltage
   vIn = analogRead(vInPin);
 
-  if (windSide) {
-    servoAngle = tabAngle + 60;
-  }
-  else {
-    servoAngle = -tabAngle + 60;
-  }
-  sentAttackAngle = (360 + windAngle) % 360;
-
-  stateSet((_TRIM_STATE)state);
-
-  if(!connection){
-    recoverConnection();
+  // Time the cycles of the updates to the vessel state and the servo angle
+  if(millis() - lastConnectionTime > postingInterval) {
+    // Update vessel state
+    update_vessel_state();
+    // Update servo angle
+    //servoControl(); // This is on a timer, no need to call here. Here only for debugging purposes.
+    // Save time of last update
+    lastConnectionTime = millis();
   }
 }
 
+
+
+/**
+ * @brief Initializes communications, called in setup()
+ * Required method
+ */
 void initComms()
 {
-    Serial.begin(115200);
-    // initialize serial for ESP module
-    ESPSerial.begin(115200);
-    // initialize ESP module
-    WiFi.init(&ESPSerial);
+  // Init serial - has to be 115200 in order to work with the ESP8266 WiFi module
+  Serial.begin(115200);
+  // Initialize serial for ESP module
+  ESPSerial.begin(115200);
+  // Initialize ESP module
+  WiFi.init(&ESPSerial);
 
-    // check for the presence of the shield
-    if (WiFi.status() == WL_NO_SHIELD) {
-        Serial.println("WiFi shield not present");
-        // don't continue
-        while (true);
+  // Check for the presence of the shield
+  if (WiFi.status() == WL_NO_SHIELD) {
+    Serial.println("WiFi shield not present");
+    // Don't continue
+    while (true)
+      ;
+  }
+
+  // Attempt to connect to WiFi network
+  while (status != WL_CONNECTED)
+  {
+    if(VERBOS_RIGID) {
+      Serial.print("Attempting to connect to WPA SSID: ");
+      Serial.println(ssid);
     }
+    // Connect to WPA/WPA2 network
+    status = WiFi.begin(ssid, pass);
+  }
 
-    // attempt to connect to WiFi network
-    while ( status != WL_CONNECTED) {
-        Serial.print("Attempting to connect to WPA SSID: ");
-        Serial.println(ssid);
-        // Connect to WPA/WPA2 network
-        status = WiFi.begin(ssid, pass);
-    }
-
-    // you're connected now, so print out the data
+  // Connected to the WiFi, print the info if in verbose mode
+  if(VERBOS_RIGID) {
     Serial.println("Connected to wifi");
     printWifiStatus();
 
     Serial.println("\nStarting connection to server...");
-    // if you get a connection, report back via serial:
-    //Udp.begin(localPort);
+  }
 
-    if(client.connect(hullIP, localPort)){
-      Serial.println("Connected to server");
-      client.print("Host: ");
-      client.println(hullIP);
-      client.println("Connection: keep-alive");
-      client.println();
-      connection = true;
-    }
-    
+  // Connect to the client (Arduino)
+  clientConnect();
+
+  if(VERBOS_RIGID) {
     Serial.print("Listening on port ");
-    Serial.println(localPort);  
+    Serial.println(localPort);
+  }
 }
 
 
-void initServo() 
+
+/**
+ * @brief Initializes servo and debugging variables, starts interrupt timers, called in setup()
+ * 
+ */
+void initServo()
 {
-  //init
+  // Init pins
   pinMode(vInPin, INPUT);
   pinMode(led1Pin, OUTPUT);
   pinMode(led2Pin, OUTPUT);
   pinMode(wifiLED, OUTPUT);
-  pinMode(powerLED, OUTPUT);
   pinMode(onBoardLED, OUTPUT);
-  
 
+  // Attach the trim tab servo
   servo.attach(servoPin);
 
+  // Put servo and led updates on a timer
   LEDtimer.begin(blinkState, 916682);
   servoTimer.begin(servoControl, 50000);
-  commsTimer.begin(update_vehicle_state, 100000);
+  //commsTimer.begin(update_vessel_state, 100000); //TODO: try this again, perhaps with 30hz or so
 
-  servo.write(SERVO_CTR); //in place so lift starts at 0 degrees or neutral state
-
-  digitalWrite(powerLED, HIGH);// turn on power led
+  // Initialize servo position to neutral (no lift) so that the boat doesn't run away
+  servo.write(SERVO_CTR);
 }
 
 
-void recoverConnection(){
-    client.stop();
-    Serial.println("Not connected");
-    if(client.connect(hullIP, localPort)){
-      connection = true;
+
+/**
+ * @brief Connects to the client, called in setup() and whenever connection is lost
+ * 
+ */
+void clientConnect(){
+  // Ensure that the queue is empty and the client has nothing for us
+  client.flush();
+  client.stop();
+
+  // Connect to the Arduino
+  if (client.connect(hullIP, localPort)) {
+    // Print info about the client if verbose
+    if(VERBOS_RIGID) {
       Serial.println("Connected to server");
       client.print("Host: ");
       client.println(hullIP);
-      client.println("Connection: keep-alive");
+      client.println("Connection: close");
       client.println();
-      commsTimer.begin(update_vehicle_state, 100000);
     }
+
+    // Update monitoring variable and the LED
+    connection = true;
+    digitalWrite(wifiLED, HIGH);
+  }
 }
 
 
+
+/**
+ * @brief Print the status of the WiFi, used for debugging only
+ * 
+ */
 void printWifiStatus()
 {
   // print the SSID of the network you're attached to
@@ -209,223 +214,110 @@ void printWifiStatus()
   Serial.print("Signal strength (RSSI):");
   Serial.print(rssi);
   Serial.println(" dBm");
-
-  digitalWrite(wifiLED, LOW);
 }
 
 
-void stateSet(_TRIM_STATE state) {
-  switch (state)
-  {
-    case TRIM_STATE_MIN_LIFT:
-      control = 0;
-      lift = 0;
-      drag = 0;
-      break;
-    case TRIM_STATE_STBD_TACK:
-      control = 0;
-      lift = 1;
-      drag = 0;
-      windSide = 1;
-      break;
-    case TRIM_STATE_PORT_TACK:
-      control = 0;
-      lift = 1;
-      drag = 0;
-      windSide = 0;
-      break;
-    case TRIM_STATE_MAX_DRAG_STBD:
-      control = 0;
-      lift = 0;
-      drag = 1;
-      windSide = 1;
-      break;
-    case TRIM_STATE_MAX_DRAG_PORT:
-      control = 0;
-      lift = 0;
-      drag = 1;
-      windSide = 0;
-      break;
-    case TRIM_STATE_MAN_CTRL:
-      control = 1;
-      lift = 0;
-      drag = 0;
-      break;
-    
-    default:
-      break;
-  }
-}
 
+/**
+ * @brief Toggles the state of some LEDs on a timer
+ * 
+ */
+void blinkState()
+{
+  // Toggle state
+  ledState = ledState == LOW ? HIGH : LOW;
 
-void blinkState() {
-  if (ledState == LOW) {
-    ledState = HIGH;
-    blinkCount = blinkCount + 1;  // increase when LED turns on
-  } else {
-    ledState = LOW;
-  }
+  // Blink WiFi led
   if (!connection) {
     digitalWrite(wifiLED, ledState);
-  }
-  if (lift) {
-    if (windSide) {
-      digitalWrite(led1Pin, HIGH);
-      digitalWrite(led2Pin, LOW);
-    }
-    else {
-      digitalWrite(led2Pin, LOW);
-      digitalWrite(led1Pin, ledState);
-    }
-  }
-  if (drag) {
-    if (windSide) {
-      digitalWrite(led2Pin, HIGH);
-      digitalWrite(led1Pin, LOW);
-    }
-    else {
-      digitalWrite(led1Pin, LOW);
-      digitalWrite(led2Pin, ledState);
-    }
-  }
+  } 
 }
 
 
-void servoControl() {
-  angleIn = analogRead(potPin) - POT_HEADWIND; // reads angle of attack data
-  angleIn = angleIn < 0 ? POT_HEADWIND + angleIn + (1023-POT_HEADWIND) : angleIn;
-  
-  windAngle = angleIn / 1023.0 * 360.0 - 180; // Convert to degrees, positive when wind from 0-180, negative when wind 180-359
-  //---------------------------------------------------------------------------------------------------
-  //set for manual control
-  if (control) {
-    digitalWrite(led1Pin, HIGH);
-    digitalWrite(led2Pin, HIGH);
-    servo.write(SERVO_CTR + controlAngle);
-  }
 
-  //------------------------------------------------------------------------------------------------------
-  //when lift is desired
-  if (lift) {
-
-    if (!windSide) {
-      windAngle = windAngle * -1;
-    }
-
-    //if the lift angle isnt enough and the heel angle isnt too much the angle of attack is increased
-    if ((MAX_LIFT_ANGLE > windAngle+1)) {  //&& (abs(heelAngle) <= maxHeelAngle))) {
-      if (tabAngle >= 55) { }
-      else {
-        tabAngle++;
-      }
-    }
-
-    //if the lift angle is too much or the max heel angle is too much the sail lightens up
-    else if ((MAX_LIFT_ANGLE < windAngle)) {  //&& (abs(heelAngle) <= maxHeelAngle)) || (abs(heelAngle) >= maxHeelAngle)) {
-      if (tabAngle <= -55) {  }
-      else {
-        tabAngle--;
-      }
-    }
-
-    //if the angle of attack is correct
-    else if (MAX_LIFT_ANGLE == windAngle) { }
-
-    //to adjust tab angle according to wind side
-    if (windSide) {
-      servo.write(SERVO_CTR + tabAngle);
-    }
-    else {
-      servo.write(SERVO_CTR - tabAngle);
-    }
-  }
-  //-----------------------------------------------------------------------------------------------------------
-  //while drag if desired
-  if (drag) {
-
-    //set sail to most possible angle of attack with respect to direction of wind
-    if (windSide) {
-      servo.write(SERVO_CTR + 55);
-    }
-    else if (!windSide) {
-      servo.write(SERVO_CTR - 55);
-    }
-  }
-  //----------------------------------------------------------------------------------
-  //minimum lift (weathervane)
-  if (!lift && !drag && !control) {
-    digitalWrite(led1Pin, LOW);
-    digitalWrite(led2Pin, LOW);
-
-    servo.write(SERVO_CTR);
-  }
-}
-
-void update_vehicle_state()
+/**
+ * @brief Sets the angle of the servo based on the angle of attack read from the encoder at the front
+ * 
+ */
+void servoControl()
 {
-  // if there's data available, read a rx_packet
-  int bytes = client.available();
-  Serial.print("  Missed msgs:");
-  Serial.println(missed_msgs);
-  missed_msgs++;
-  if (bytes > 0) {
-//    Serial.print("Received rx_packet of size ");
-//    Serial.println(bytes);
-//    Serial.print("From ");
-//    Serial.print(client.remoteIP());
-//    Serial.print(", port ");
-//    Serial.println(localPort);
-    if(client.remoteIP() == hullIP){
-      missed_msgs = 0;
-      for(int i = 0; i < bytes; i++){
-        rx_buffer[i] = (uint8_t)client.read();
-      }
-      
-      rx_message = vehicle_state_init_zero;
-      
-      pb_istream_t stream = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
-      bool status = pb_decode(&stream, vehicle_state_fields, &rx_message);
-   
-      if (!status)
-      {
-          Serial.println("Failed to decode");
-          return;
-      }
-      
-      Serial.print("  State:");
-      Serial.print(rx_message.state);
-      Serial.print("  curAngle:");
-      Serial.print(rx_message.curHeelAngle);
-      Serial.print("  maxAngle:");
-      Serial.print(rx_message.maxHeelAngle);
-      Serial.print("  ControlAngle:");
-      Serial.print(rx_message.controlAngle);
-      Serial.print("  WindAngle:");
-      Serial.print(rx_message.windAngle);
-      Serial.print("  vIn:");
-      Serial.print(rx_message.vIn);
-      Serial.print(" HallPort:");
-      Serial.print(rx_message.hallPortTrip);
-      Serial.print(" HallStbd:");
-      Serial.print(rx_message.hallPortTrip);
-      Serial.println();
+  // Read, format, and scale angle of attached reading from the encoder
+  windAngle = analogRead(potPin) - POT_HEADWIND; // reads angle of attack data
+  windAngle = windAngle < 0 ? POT_HEADWIND + windAngle + (1023 - POT_HEADWIND) : windAngle;
+  windAngle = windAngle / 1023.0 * 360.0 - 180; // Convert to degrees, positive when wind from 0-180, negative when wind 180-359
 
-      // Transfer to local variables - not necessary, just to avoid errors.
-      state = rx_message.state;
-      heelAngle = rx_message.curHeelAngle;
-      maxHeelAngle = rx_message.maxHeelAngle;
-      controlAngle = rx_message.controlAngle;
+  // Set debug LEDs to on to indicate servo control is active
+  digitalWrite(led1Pin, HIGH);
+  digitalWrite(led2Pin, HIGH);
 
-    } else {
-      //Serial.println("Unknown device!");
+  // Write servo position to one read from the Arduino
+  servo.write(SERVO_CTR + rx_message.controlAngle-200  - 90);
+}
+
+
+
+/**
+ * @brief Reads vessel state from the Arduino server
+ * 
+ * @TODO: make a response
+ */
+void update_vessel_state()
+{
+    // If there's data available, read a rx_packet
+    int bytes = client.available();
+
+    if(VERBOSE_RIGID){Serial.println(bytes);}
+
+    // Message size determined by the protobuf struct, so possible to check if the bytes available constitute a full message
+    if(bytes > 50) {
+      // The queue is flooded, so we want to flush it
       client.flush();
       missed_msgs++;
+
+      // Reconnect if the queue keeps getting flooded
+      if(missed_msgs > 100) {
+        clientConnect();
+        missed_msgs = 0;
+      }
+
+      // Nothing read, so nothing to do
+      return;
+
+    } else if(bytes < 5) {
+      // Message received is too small to be a protobuf message
+      missed_msgs++;
+      // Reconnect if keep getting really small messages
+      if(missed_msgs > 100) {
+        clientConnect();
+        missed_msgs = 0;
+      }
+      return;
     }
-  }
-  if(missed_msgs > 10){
-    client.stop();
-    Serial.println("Reconnecting client...");
-    connection = false;
-    commsTimer.end();
-  }
+    
+    // Read the bytes into a buffer so that we can decode them
+    for (int i = 0; i < bytes; i++) {
+      rx_buffer[i] = (uint8_t)client.read();
+    }
+
+    // Prepare a struct to save the message to
+    rx_message = vessel_state_init_zero;
+
+    // Decode the message and saved to a struct
+    pb_istream_t stream_rx = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
+    bool status_rx = pb_decode(&stream_rx, vessel_state_fields, &rx_message);
+
+    // Couldn't decode the message, so want to reconnect
+    if (!status_rx) {
+      if(VERBOS_RIGID) {Serial.println("Failed to decode");}
+      clientConnect();
+      //missed_msgs++;
+
+      // Nothing read, so nothing to do
+      return;
+    }
+    missed_msgs = 0;
+
+    //blinkState(); //  This is on a timer, no need to call here. Here only for debugging purposes.
+
+    if(VERBOSE_RIGID) {printPacket(rx_message);}
 }
