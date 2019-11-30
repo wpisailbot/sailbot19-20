@@ -46,17 +46,17 @@ python -m grpc_tools.protoc -I='$SRC_DIR' --python_out='$DST_DIR' --grpc_python_
 # Status
 The following have been addressed and tested at least to some extent:
 - [X] Serial read
-    - [] NMEA 0183 read
-- [] PWM read 
+    - [ ] NMEA 0183 read
+- [ ] PWM read 
 - [X] Protobuf comms (server)
 - [X] Protobuf comms (trim tab)
     - [X] Protobuf formation
-    - [] Socket connection
+    - [ ] Socket connection
 - [X] Web output
     - Need to to fix the output so that it displays the full message and is more readable
 - [X] Logging
     - [X] Terminal coding
-    - [] File generation
-- [] E-Ink
-- [] DIO (Hall effect)
-- [] CAN comms (for HERO and eventual NMEA 2000)
+    - [ ] File generation
+- [ ] E-Ink
+- [ ] DIO (Hall effect)
+- [ ] CAN comms (for HERO and eventual NMEA 2000)
