@@ -2,7 +2,11 @@
 
 syntax = "proto3";
 
-enum TRIM_STATE{
+service Webserver {
+    rpc put_message(server_req) returns (vessel_state) {}
+}
+
+enum TRIM_STATE {
     MIN_LIFT = 0;
     STBD_TACK = 1;
     PORT_TACK = 2;
@@ -11,10 +15,11 @@ enum TRIM_STATE{
     MAN_CTRL = 5;
 }
 
-enum DEVICE_ID{
+enum DEVICE_ID {
     RIGID_SAIL = 0;
     HERO = 1;
     ARDUINO = 2;
+    BBB = 3;
 }
 
 message vessel_state {
@@ -27,4 +32,8 @@ message vessel_state {
     uint32 vIn = 7;
     bool hallPortTrip = 8;
     bool hallStbdTrip = 9; 
+}
+
+message server_req{
+    bool succ = 1;
 }

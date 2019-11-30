@@ -1,0 +1,14 @@
+CANboat can be useful
+https://github.com/canboat/canboat/blob/master/analyzer/pgn.h
+
+USB Host shield requires a driver to be written for the device to be used - https://forum.arduino.cc/index.php?topic=121669.0;wap
+
+Might honestly be easier to go directly to CAN
+
+Timo Lappalainen NMEA libraries support Maretron
+
+Maretron drivers are part of the Linux Kernel already, so parsing with BBB should be simpler - might as well switch everything else to BBB too - https://www.maretron.com/support/knowledgebase/knowledgemanager/questions/409/Does+Maretron+have+Linux+driver+for+the+USB100%3F
+
+Simulator can be on the serial network... - https://www.hackster.io/hwhardsoft/how-to-use-nmea-0183-with-arduino-6e3988
+
+Explanation of the USB Host shield implementation of the GPS receiver (https://github.com/felis/USB_Host_Shield_2.0/blob/master/examples/pl2303/pl2303_tinygps/pl2303_tinygps.ino) is here: http://www.mercenarymind.com/arduino/17258-communicating-to-gps-receiver-using-usb-host-shield
