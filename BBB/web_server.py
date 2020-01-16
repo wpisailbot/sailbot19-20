@@ -3,6 +3,7 @@ import comms_pb2 as comms
 import comms_pb2_grpc as comms_grpc
 import grpc as gRPC
 import logger as LOG
+import Constants as CONST
 from werkzeug.serving import run_simple
 
 app = Flask(__name__)
@@ -18,7 +19,7 @@ def get_mesgs():
         stub = comms_grpc.WebserverStub(channel)
         response = stub.put_message(comms.server_req(succ=True))
 
-    return str(response)
+    return CONST.stringify_proto_flask(response)
 
 @app.route("/")
 def publish():

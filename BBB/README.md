@@ -53,7 +53,7 @@ The following have been addressed and tested at least to some extent:
     - [X] Protobuf formation
     - [ ] Socket connection
 - [X] Web output
-    - Need to to fix the output so that it displays the full message and is more readable
+    - [X] Need to to fix the output so that it displays the full message and is more readable
 - [X] Logging
     - [X] Terminal coding
     - [ ] File generation
