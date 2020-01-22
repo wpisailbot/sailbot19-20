@@ -6,6 +6,7 @@ import logger as LOG
 maretron = Maretron.Maretron()
 Messenger.init()
 
+
 def loop():
     ## Try implementing async
     # get data

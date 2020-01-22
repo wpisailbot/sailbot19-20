@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0b\x63omms.proto\"\xd7\x01\n\x0cvessel_state\x12\x1d\n\tdevice_id\x18\x01 \x01(\x0e\x32\n.DEVICE_ID\x12\x1a\n\x05state\x18\x02 \x01(\x0e\x32\x0b.TRIM_STATE\x12\x14\n\x0c\x63urHeelAngle\x18\x03 \x01(\r\x12\x14\n\x0cmaxHeelAngle\x18\x04 \x01(\r\x12\x14\n\x0c\x63ontrolAngle\x18\x05 \x01(\r\x12\x11\n\twindAngle\x18\x06 \x01(\r\x12\x0b\n\x03vIn\x18\x07 \x01(\r\x12\x14\n\x0challPortTrip\x18\x08 \x01(\x08\x12\x14\n\x0challStbdTrip\x18\t \x01(\x08\"\x1a\n\nserver_req\x12\x0c\n\x04succ\x18\x01 \x01(\x08*l\n\nTRIM_STATE\x12\x0c\n\x08MIN_LIFT\x10\x00\x12\r\n\tSTBD_TACK\x10\x01\x12\r\n\tPORT_TACK\x10\x02\x12\x11\n\rMAX_DRAG_STBD\x10\x03\x12\x11\n\rMAX_DRAG_PORT\x10\x04\x12\x0c\n\x08MAN_CTRL\x10\x05*;\n\tDEVICE_ID\x12\x0e\n\nRIGID_SAIL\x10\x00\x12\x08\n\x04HERO\x10\x01\x12\x0b\n\x07\x41RDUINO\x10\x02\x12\x07\n\x03\x42\x42\x42\x10\x03\x32\x38\n\tWebserver\x12+\n\x0bput_message\x12\x0b.server_req\x1a\r.vessel_state\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0b\x63omms.proto\"\xd7\x01\n\x0cvessel_state\x12\x1d\n\tdevice_id\x18\x01 \x01(\x0e\x32\n.DEVICE_ID\x12\x1a\n\x05state\x18\x02 \x01(\x0e\x32\x0b.TRIM_STATE\x12\x14\n\x0c\x63urHeelAngle\x18\x03 \x01(\r\x12\x14\n\x0cmaxHeelAngle\x18\x04 \x01(\r\x12\x14\n\x0c\x63ontrolAngle\x18\x05 \x01(\r\x12\x11\n\twindAngle\x18\x06 \x01(\r\x12\x0b\n\x03vIn\x18\x07 \x01(\r\x12\x14\n\x0challPortTrip\x18\x08 \x01(\x08\x12\x14\n\x0challStbdTrip\x18\t \x01(\x08\"\x1a\n\nserver_req\x12\x0c\n\x04succ\x18\x01 \x01(\x08*l\n\nTRIM_STATE\x12\x0c\n\x08MIN_LIFT\x10\x00\x12\r\n\tSTBD_TACK\x10\x01\x12\r\n\tPORT_TACK\x10\x02\x12\x11\n\rMAX_DRAG_STBD\x10\x03\x12\x11\n\rMAX_DRAG_PORT\x10\x04\x12\x0c\n\x08MAN_CTRL\x10\x05*;\n\tDEVICE_ID\x12\x0e\n\nRIGID_SAIL\x10\x00\x12\x08\n\x04HERO\x10\x01\x12\x0b\n\x07\x41RDUINO\x10\x02\x12\x07\n\x03\x42\x42\x42\x10\x03\x32\x38\n\tWebserver\x12+\n\x0bput_message\x12\x0b.server_req\x1a\r.vessel_state\"\x00\x32=\n\x0cTeensyserver\x12-\n\x0bput_message\x12\r.vessel_state\x1a\r.vessel_state\"\x00\x62\x06proto3')
 )
 
 _TRIM_STATE = _descriptor.EnumDescriptor(
@@ -270,5 +270,29 @@ _WEBSERVER = _descriptor.ServiceDescriptor(
 _sym_db.RegisterServiceDescriptor(_WEBSERVER)
 
 DESCRIPTOR.services_by_name['Webserver'] = _WEBSERVER
+
+
+_TEENSYSERVER = _descriptor.ServiceDescriptor(
+  name='Teensyserver',
+  full_name='Teensyserver',
+  file=DESCRIPTOR,
+  index=1,
+  serialized_options=None,
+  serialized_start=490,
+  serialized_end=551,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='put_message',
+    full_name='Teensyserver.put_message',
+    index=0,
+    containing_service=None,
+    input_type=_VESSEL_STATE,
+    output_type=_VESSEL_STATE,
+    serialized_options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_TEENSYSERVER)
+
+DESCRIPTOR.services_by_name['Teensyserver'] = _TEENSYSERVER
 
 # @@protoc_insertion_point(module_scope)

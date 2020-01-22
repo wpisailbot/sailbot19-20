@@ -6,6 +6,10 @@ service Webserver {
     rpc put_message(server_req) returns (vessel_state) {}
 }
 
+service Teensyserver {
+    rpc put_message(vessel_state) returns (vessel_state) {}
+}
+
 enum TRIM_STATE {
     MIN_LIFT = 0;
     STBD_TACK = 1;

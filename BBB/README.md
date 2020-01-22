@@ -29,7 +29,7 @@ python -m grpc_tools.protoc -I=$SRC_DIR --python_out=$DST_DIR --grpc_python_out=
 ```
 Windows:
 ```sh
-python -m grpc_tools.protoc -I='$SRC_DIR' --python_out='$DST_DIR' --grpc_python_out='$DST_DIR' '$SRC_DIR/comms.proto'
+py -3 -m grpc_tools.protoc -I='$SRC_DIR' --python_out='$DST_DIR' --grpc_python_out='$DST_DIR' '$SRC_DIR/comms.proto'
 ```
 
 # How to run

@@ -13,15 +13,24 @@ count = 0
 def get_mesgs():
     """
     gRPC client routine. Gets proto.vessel_state from the main program.
-    :returns [string] stringified proto.vessel_state returned by the serviser
+    :returns proto.vessel_state returned by the serviser
     """
     with gRPC.insecure_channel('localhost:50051') as channel:
         stub = comms_grpc.WebserverStub(channel)
         response = stub.put_message(comms.server_req(succ=True))
 
-    return CONST.stringify_proto_flask(response)
+    return response
 
 @app.route("/")
+def publish():
+    """
+    Flask server
+    :returns [string] stringified proto.vessel_state returned by the gRPC client routine
+    """
+    LOG.LOG_D("Count: " + str(count))
+    return CONST.stringify_proto_flask(get_mesgs())
+
+@app.route("/teensy")
 def publish():
     """
     Flask server

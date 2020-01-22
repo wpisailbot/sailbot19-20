@@ -27,6 +27,19 @@ class Messenger(comms_grpc.WebserverServicer):
         LOG.LOG_D("Request")
         LOG.LOG_M(state)
         return state
+
+    def get_put_message(self, request, context):
+        """
+        gRPC servicer method - check gRPC for documentation
+        Called asynchronously by the client (web_server.py)
+        """
+        __vessel_state_out = make_msg()
+        
+        __vessel_state_in = request
+
+        LOG.LOG_D("Request")
+        LOG.LOG_M(__vessel_state_out)
+        return __vessel_state_out
         
 
 messenger = Messenger()
@@ -36,6 +49,7 @@ def init():
     Initializes gRPC server
     """
     comms_grpc.add_WebserverServicer_to_server(messenger, server)
+    comms_grpc.add_TeensyserverServicer_to_server(messenger, server)
     server.add_insecure_port('[::]:50051')
     server.start()
     LOG.LOG_I("Messenger is ready!")
@@ -63,6 +77,7 @@ def make_msg():
     vessel_state.vIn = 0
     vessel_state.hallPortTrip = False
     vessel_state.hallStbdTrip = False
+
     return vessel_state
 
 def __send_msg(vessel_state):
