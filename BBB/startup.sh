@@ -1,4 +1,6 @@
 #!/bin/sh
-python main.py &
-python web_server.py &
-python teensy_server.py &
+
+python -m PWMRead.PWMRead &
+# python -m Rudders.rudderControl &
+python -m TrimTab.trimComms &
+python -m main.py &

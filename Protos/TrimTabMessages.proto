@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message ControlAngle {
+    float control_angle = 1;
+}
+
+message ApparentWind{
+    float apparent_wind = 1;
+}

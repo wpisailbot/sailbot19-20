@@ -1,0 +1,58 @@
+syntax = "proto3";
+import "TrimTabMessages.proto";
+import "PWMMessages.proto";
+
+service AirmarReader {
+    rpc GetAirmarData(req) returns (AirmarData) {}
+}
+
+service AutonomousValueReader {
+    rpc GetAutonomousValues(Readings) returns (ControlValues) {}
+}
+
+service PWMReader {
+    rpc GetPWMInputs(req) returns (PWMValues) {}
+}
+
+service RudderGetter {
+    rpc GetRudderSetting(req) returns (ControlAngle) {}
+}
+
+service TrimTabGetter {
+    rpc GetTrimTabSetting(ApparentWind) returns (ControlAngle) {}
+}
+
+message AirmarData {
+    float wind_speed = 1;   // Knots, 0.1 res
+    float wind_dir = 2;     // Degs, 0.1 res
+    float air_temp = 3;     // C, 0.1 res
+    float rel_hum = 4;      // %, 0.1 res
+    float baro_press = 5;   // hPa, 0.1 res
+
+    message Compass{
+        // Degs, 0-359.9 range, 0.1 res
+        float x = 1;
+        float y = 2;
+        float z = 3;
+    }
+    
+    message PitchRoll{
+        // Degs, 50 deg range, 0.1 res
+        float pitch = 1;
+        float roll = 2;
+    }
+}
+
+message req{
+    bool succ = 1;
+}
+
+message ControlValues {
+    float rudderAngle = 1;
+    float trimAngle = 2;
+    float ballastAngle = 3;
+}
+
+message Readings{
+    float apparentWind = 1;
+}

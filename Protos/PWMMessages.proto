@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message PWMValues {
+    float ch1 = 1; // Trim tab
+    float ch2 = 2; // Rudder
+    float ch3 = 3; //
+    float ch4 = 4; //
+    float ch5 = 5; //
+    float ch6 = 6; //
+}

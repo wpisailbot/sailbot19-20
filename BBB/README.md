@@ -4,14 +4,15 @@ Code replicating and extending upon the functions of the Arduino in the hull. Th
 The Linux image on the board does not have a graphical interface, so you have to interact with it through the terminal. You can either use something like `nano` or `vim`, or you can develop on your machine in your favorite IDE and copy the files to the BBB.
 ## Copy from computer to the BBB
 ```sh
-scp BBB/* debian@192.168.7.2:~/Sailbot/
+scp -rp BBB_new/* debian@192.168.7.2:~/Sailbot/
 ```
 ## Copy from the BBB to computer
 ```sh
-scp debian@192.168.7.2:~/Sailbot/* BBB/
+scp -r debian@192.168.7.2:~/Sailbot/* BBB/
 ```
 ## Generate protobuf files
-You must generate language specific protobuf files in order to use the `.proto` definitions.
+You must generate language specific protobuf files in order to use the `.proto` definitions. To do this, run `generateProtos.sh`. If it doesn't work, check that the directories in the script match what you have going on. Use the below commands, comments in the script, and the internet to help.
+
 Assuming you are working in the root project directory, `$SRC_DIR` is `sailbot19-20` and `$DST_DIR` is `sailbot19-20\BBB`.
 ### Generating protobuf files
 Linux:
@@ -32,6 +33,11 @@ Windows:
 py -3 -m grpc_tools.protoc -I='$SRC_DIR' --python_out='$DST_DIR' --grpc_python_out='$DST_DIR' '$SRC_DIR/comms.proto'
 ```
 
+## Required library files to run
+[Protobuf](https://developers.google.com/protocol-buffers/docs/overview#sounds-like-the-solution-for-me-how-do-i-get-started) libraries must be installed and exist in the directory with the code
+
+[libpruio](http://users.freebasic-portal.de/tjf/Projekte/libpruio/doc/html/ChaPreparation.html) libraries must be installed and exist in the directory with the code
+
 # How to run
 1. Ssh into the Beaglebone Black with `ssh debian@192.168.7.2`
 2. Enter `temppwd` for the password
@@ -45,18 +51,7 @@ py -3 -m grpc_tools.protoc -I='$SRC_DIR' --python_out='$DST_DIR' --grpc_python_o
     ```
 # Status
 The following have been addressed and tested at least to some extent:
-- [X] Serial read
-    - [ ] NMEA 0183 read
-- [ ] PWM read 
-- [X] Protobuf comms (server)
-- [X] Protobuf comms (trim tab)
-    - [X] Protobuf formation
-    - [ ] Socket connection
-- [X] Web output
-    - [X] Need to to fix the output so that it displays the full message and is more readable
-- [X] Logging
-    - [X] Terminal coding
-    - [ ] File generation
-- [ ] E-Ink
-- [ ] DIO (Hall effect)
-- [ ] CAN comms (for HERO and eventual NMEA 2000)
+- [ ] Socket comms with the trim tab
+- [ ] Reading PWM
+- [ ] Outputting PWM
+- [ ] gRPC

@@ -11,7 +11,6 @@
 #ifndef Constants_h
 #define Constants_h
 #include <IPAddress.h>
-#include "comms.pb.h"
 #include <Arduino.h>
 
 /*  RIGID SAIL   */
@@ -52,50 +51,12 @@ const int HERO_pinTX = 16; // Serial 2
 const int HERO_pinRX = 17; // Serial 2
 //PWM range 980 - 2004
 
-/*  BOAT (BBB)    */
-const int hallPortPin = 4;
-const int hallStbdPin = 5;
-
-const int PWM1Pin = digitalPinToInterrupt(2); // state 1
-const int PWM2Pin = digitalPinToInterrupt(3); // ballast
-const int PWM3Pin = digitalPinToInterrupt(20); // rudder
-const int PWM4Pin = digitalPinToInterrupt(21); // Unused
-const int PWM5Pin = digitalPinToInterrupt(19); // manual control
-const int PWM6Pin = digitalPinToInterrupt(18); // state 2
-
-const int HERO_pinTX = 16; // Serial 2
-const int HERO_pinRX = 17; // Serial 2
-//PWM range 980 - 2004
-
 /*  COMMS   */
 unsigned int localPort = 8888;
 IPAddress hullIP(192, 168, 0, 21);  // Hull's IP address
 IPAddress rigidIP(192, 168, 0, 25); // RigidSail's IP address
 byte rigidMac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEA};
 byte boatMac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-
-void printPacket(vessel_state message)
-{
-   Serial.print("  Device:");
-   Serial.print(message.device_id);
-   Serial.print("  State:");
-   Serial.print((int)message.state);
-   Serial.print("  curAngle:");
-   Serial.print(message.curHeelAngle);
-   Serial.print("  maxAngle:");
-   Serial.print(message.maxHeelAngle);
-   Serial.print("  ControlAngle:");
-   Serial.print(message.controlAngle);
-   Serial.print("  WindAngle:");
-   Serial.print(message.windAngle);
-   Serial.print("  vIn:");
-   Serial.print(message.vIn);
-   Serial.print(" HallPort:");
-   Serial.print(message.hallPortTrip);
-   Serial.print(" HallStbd:");
-   Serial.print(message.hallPortTrip);
-   Serial.println();
-}
 
 /* DEBUGGING TOOLS   */
 // TODO: make these settable on the fly without reuploading necessary
