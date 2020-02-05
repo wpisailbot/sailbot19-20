@@ -34,9 +34,9 @@ py -3 -m grpc_tools.protoc -I='$SRC_DIR' --python_out='$DST_DIR' --grpc_python_o
 ```
 
 ## Required library files to run
-[Protobuf](https://developers.google.com/protocol-buffers/docs/overview#sounds-like-the-solution-for-me-how-do-i-get-started) libraries must be installed and exist in the directory with the code
+`sudo pip install grpcio`
 
-[libpruio](http://users.freebasic-portal.de/tjf/Projekte/libpruio/doc/html/ChaPreparation.html) libraries must be installed and exist in the directory with the code
+`sudo pip install protobuf`
 
 # How to run
 1. Ssh into the Beaglebone Black with `ssh debian@192.168.7.2`
