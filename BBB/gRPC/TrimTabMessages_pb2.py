@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x15TrimTabMessages.proto\"%\n\x0c\x43ontrolAngle\x12\x15\n\rcontrol_angle\x18\x01 \x01(\x02\"%\n\x0c\x41pparentWind\x12\x15\n\rapparent_wind\x18\x01 \x01(\x02\x62\x06proto3')
+  serialized_pb=_b('\n\x15TrimTabMessages.proto\"%\n\x0c\x43ontrolAngle\x12\x15\n\rcontrol_angle\x18\x01 \x01(\r\"%\n\x0c\x41pparentWind\x12\x15\n\rapparent_wind\x18\x01 \x01(\x02\x62\x06proto3')
 )
 
 
@@ -35,8 +35,8 @@ _CONTROLANGLE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='control_angle', full_name='ControlAngle.control_angle', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),

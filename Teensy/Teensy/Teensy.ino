@@ -11,7 +11,7 @@
 
 // Protobuf variables
 uint8_t rx_buffer[32];
-uint8_t tx_buffer[32];
+char tx_buffer[32];
 
 // Wifi variables
 SoftwareSerial ESPSerial(RX2pin, TX2pin); // RX2, TX2
@@ -33,7 +33,8 @@ IntervalTimer servoTimer;
 volatile int missed_msgs = 0;
 Servo servo;
 volatile float windAngle; // Mapped reading from wind direction sensor on the front of the sail
-volatile float control_angle;
+volatile uint32_t control_angle;
+bool readingNow = false;
 
 void setup()
 {
@@ -74,9 +75,17 @@ void simpleSendReceive()
   {
     client.stop();
     establishConnection();
+  } else {
+    if(!readingNow){
+      writeProtobuf();
+      delay(100);
+    }
+    if(readingNow){
+      readProtobuf();
+      delay(100);
+    }
+    delay(100);
   }
-  readProtobuf();
-  writeProtobuf();
 }
 
 void readProtobuf()
@@ -84,29 +93,34 @@ void readProtobuf()
   // If there's data available, read a rx_packet
   int bytes = client.available();
 
-  // Read the bytes into a buffer so that we can decode them
-  for (int i = 0; i < bytes; i++)
-  {
-    rx_buffer[i] = (uint8_t)client.read();
+  if (bytes){// Read the bytes into a buffer so that we can decode them
+    for (int i = 0; i < bytes; i++)
+    {
+      rx_buffer[i] = (uint8_t)client.read();
+    }
+  
+    // Prepare a struct to save the message to
+    ControlAngle controlAngle = ControlAngle_init_zero;
+  
+    // Decode the message and save to a struct
+    pb_istream_t stream_rx = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
+    bool status_rx = pb_decode(&stream_rx, ControlAngle_fields, &controlAngle);
+  
+    // Couldn't decode the message, so want to reconnect
+    if (!status_rx)
+    {
+      // Nothing read, so nothing to do
+      Serial.println("Couldn't decode!");
+      //return;
+    }
+  
+    control_angle = controlAngle.control_angle;
+    Serial.print("Control angle: ");
+    Serial.println(control_angle);
+  
+    missed_msgs = 0;
+    readingNow = false;
   }
-
-  // Prepare a struct to save the message to
-  ControlAngle controlAngle = ControlAngle_init_zero;
-
-  // Decode the message and save to a struct
-  pb_istream_t stream_rx = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
-  bool status_rx = pb_decode(&stream_rx, ControlAngle_fields, &controlAngle);
-
-  // Couldn't decode the message, so want to reconnect
-  if (!status_rx)
-  {
-    // Nothing read, so nothing to do
-    return;
-  }
-
-  control_angle = controlAngle.control_angle;
-
-  missed_msgs = 0;
 }
 
 void writeProtobuf()
@@ -120,19 +134,28 @@ void writeProtobuf()
 
   // Fill in the wind dir
   apparentWind.apparent_wind = windAngle;
+//  apparentWind.apparent_wind = 3;
 
+  Serial.print("Wind Angle: ");
+  Serial.println(windAngle);
+  
   // Encode the message
-  status = pb_encode(&stream, ApparentWind_fields, &apparentWind);
+  bool status_tx = pb_encode(&stream, ApparentWind_fields, &apparentWind);
   message_length = stream.bytes_written;
 
   /* Then just check for any errors.. */
-  if (!status)
+  if (!status_tx)
   {
     printf("Encoding failed: %s\n", PB_GET_ERROR(&stream));
     return;
   }
-
-  client.write((const char *)tx_buffer); //TODO: might have to be print
+  
+  if(message_length > 0){
+    int data =  client.write(tx_buffer, message_length);
+    if(data > 0){
+      readingNow = true;
+    }
+  }
 }
 
 void establishConnection()
@@ -161,10 +184,6 @@ void establishConnection()
   if (client.connect(hullIP, 50000))
   {
     Serial.println("Connected to server");
-    client.print("Host: ");
-    client.println(hullIP);
-    client.println("Connection: keep-alive");
-    client.println();
     connection = true;
   }
   Serial.print("Listening on port ");

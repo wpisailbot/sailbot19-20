@@ -7,16 +7,21 @@ from gRPC import MessagesServices_pb2_grpc as ms_grpc
 from gRPC import TrimTabMessages_pb2 as tt
 from gRPC import TrimTabMessages_pb2_grpc as tt_grpc
 import signal
+import binascii 
+
+
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 def keyboardInterruptHandler(signal, frame):
     print("KeyboardInterrupt (ID: {}) has been caught. Cleaning up...".format(signal))
+    s.shutdown(socket.SHUT_RDWR)
+    s.close()
     exit(0)
 
 signal.signal(signal.SIGINT, keyboardInterruptHandler)
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-s.bind((CONST.OWN_IP, 50000))
+s.bind(('192.168.7.2', 50000))
 s.listen(1)
 conn, addr = s.accept()
 
@@ -39,13 +44,20 @@ server.start()
 try:
     while True:
         receivedData = tt.ApparentWind()
-        receivedData.ParseFromString(conn.recv(32)) # Receiving a single float
+        data = conn.recv(32)
+        if data:
+            receivedData.ParseFromString(data) # Receiving a single float
         aw_data = receivedData.apparent_wind
         print("Apparent Wind: " + str(aw_data))
         if not aw_data:
             pass
         sendData = tt.ControlAngle()
-        sendData.control_angle = input("Control Angle: ")
-        conn.sendall(sendData.SerializeToString())
+        try:
+            sendData.control_angle = input("Control Angle: ")
+            if sendData.control_angle:
+                conn.sendall(sendData.SerializeToString())
+        except:
+            pass
 except KeyboardInterrupt:    
-    conn.close()
+    s.shutdown(socket.SHUT_RDWR)
+    s.close()
