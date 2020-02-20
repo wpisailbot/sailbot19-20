@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+message PWMValues {
+    uint32 ch1 = 1; // Trim tab
+    uint32 ch2 = 2; // Rudder
+    uint32 ch3 = 3; //
+    uint32 ch4 = 4; //
+    uint32 ch5 = 5; //
+    uint32 ch6 = 6; //
+}
+
+message ControlAngles {
+    uint32 rudder_angle = 1;
+    uint32 ballast_angle = 2;
+}

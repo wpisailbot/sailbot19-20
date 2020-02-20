@@ -9,4 +9,4 @@ py -3 -m grpc_tools.protoc -I=Protos --python_out=BBB/gRPC --grpc_python_out=BBB
 
 # Generate Teensy proto files
 $NANOPB_PATH --nanopb_out=./custom_libraries/nanopb-lib/ Protos/TrimTabMessages.proto
-$NANOPB_PATH --nanopb_out=./custom_libraries/nanopb-lib/ Protos/PWMMessages.proto
+$NANOPB_PATH --nanopb_out=./custom_libraries/nanopb-lib/ Protos/ArduinoMessages.proto

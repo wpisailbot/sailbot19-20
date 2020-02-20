@@ -49,9 +49,3 @@ py -3 -m grpc_tools.protoc -I='$SRC_DIR' --python_out='$DST_DIR' --grpc_python_o
     python main.py
     python web_server.py
     ```
-# Status
-The following have been addressed and tested at least to some extent:
-- [ ] Socket comms with the trim tab
-- [ ] Reading PWM
-- [ ] Outputting PWM
-- [ ] gRPC

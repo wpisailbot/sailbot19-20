@@ -1,7 +1,16 @@
 syntax = "proto3";
 
-message ControlAngle {
+message TrimAngle {
     uint32 control_angle = 1;
+    TRIM_STATE state = 2;
+    enum TRIM_STATE{
+        MAX_LIFT_PORT = 0;
+        MAX_LIFT_STBD = 1;
+        MAX_DRAG_PORT = 2;
+        MAX_DRAG_STBD = 3;        
+        MIN_LIFT = 4;        
+        MANUAL = 5;
+    }
 }
 
 message ApparentWind{

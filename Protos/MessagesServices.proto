@@ -1,6 +1,6 @@
 syntax = "proto3";
 import "TrimTabMessages.proto";
-import "PWMMessages.proto";
+import "ArduinoMessages.proto";
 
 service AirmarReader {
     rpc GetAirmarData(req) returns (AirmarData) {}
@@ -11,15 +11,15 @@ service AutonomousValueReader {
 }
 
 service PWMReader {
-    rpc GetPWMInputs(req) returns (PWMValues) {}
-}
-
-service RudderGetter {
-    rpc GetRudderSetting(req) returns (ControlAngle) {}
+    rpc GetPWMInputs(ControlAngles) returns (PWMValues) {}
 }
 
 service TrimTabGetter {
-    rpc GetTrimTabSetting(ApparentWind) returns (ControlAngle) {}
+    rpc GetTrimTabSetting(ApparentWind) returns (TrimAngle) {}
+}
+
+service Webserver{
+    rpc MakeServerRequest(Server_request) returns (Server_response) {}
 }
 
 message AirmarData {
@@ -55,4 +55,16 @@ message ControlValues {
 
 message Readings{
     float apparentWind = 1;
+}
+
+message Server_request{
+    bool req = 1;
+}
+
+message Server_response{
+    float apparent_trim_wind = 1;
+    float trim_angle = 2;
+    float rudder_angle = 3;
+    float ballast_angle = 4;
+    PWMValues pwm_values = 5;
 }

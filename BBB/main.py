@@ -5,8 +5,8 @@ from gRPC import MessagesServices_pb2 as ms
 from gRPC import MessagesServices_pb2_grpc as ms_grpc
 from gRPC import TrimTabMessages_pb2 as tt
 from gRPC import TrimTabMessages_pb2_grpc as tt_grpc
-from gRPC import PWMMessages_pb2 as pwm
-from gRPC import PWMMessages_pb2_grpc as pwm_grpc
+from gRPC import ArduinoMessages_pb2 as PWMmsgs
+from gRPC import ArduinoMessages_pb2_grpc as PWMmsgs_grpc
 import signal
 
 def keyboardInterruptHandler(signal, frame):
@@ -16,42 +16,46 @@ def keyboardInterruptHandler(signal, frame):
 signal.signal(signal.SIGINT, keyboardInterruptHandler)
 #https://keyboardinterrupt.org/catching-a-keyboardinterrupt-signal/
 
-
-rudderControlAngle = 50
-apparentWind = ms_grpc.ApparentWind()
-
-class RudderGetterServicer(ms_grpc.RudderGetterServicer):
-    def GetTrimTabSetting(self, request, context):
-        rudderControlAngle = ms_grpc.ControlAngle()
-        rudderControlAngle.control_angle = rudderControlAngle
-        return apparentWind
-
-
-server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-ms_grpc.add_RudderGetterServicer_to_server(RudderGetterServicer, server)
-server.add_insecure_port('localhost:50051')
-server.start()
+apparentWind = tt.ApparentWind()
+controlAngles = PWMmsgs.ControlAngles()
+controlAngles.rudder_angle = 0
+controlAngles.ballast_angle = 0
+trimAngle = tt.TrimAngle()
+PWMInput = PWMmsgs.PWMValues()
+PWMInput.ch1 = 1
+PWMInput.ch2 = 2
+PWMInput.ch3 = 3
+PWMInput.ch4 = 4
+PWMInput.ch5 = 5
+PWMInput.ch6 = 6
 
 
 
 # Setup grpc
-channel = grpc.insecure_channel('localhost:50051')
-stubTrim = ms_grpc.TrimTabGetterStub(channel)
-stubPWM = ms_grpc.PWMReaderStub(channel)
+
+channelTrim = grpc.insecure_channel('localhost:50050')
+stubTrim = ms_grpc.TrimTabGetterStub(channelTrim)
+channelPWM = grpc.insecure_channel('localhost:50051')
+stubPWM = ms_grpc.PWMReaderStub(channelPWM)
 
 
 
 def loop():
-    PWMInput = stubPWM.GetPWMInputs(ms_grpc.req(succ=True))
+    # PWMInput = stubPWM.GetPWMInputs(PWMmsgs.RudderAngle(control_angle = 0))
+    stubPWM.GetPWMInputs(controlAngles)
 
-    trimControlAngle = ms_grpc.ControlAngle()
-    trimControlAngle.control_angle = PWMInput.ch1
-    rudderControlAngle = PWMInput.ch2
+    trimAngle.control_angle = PWMInput.ch1
+    controlAngle.rudder_angle = PWMInput.ch2
+    controlAngle.ballast_angle = PWMInput.ch3
 
-    apparentWind = stubTrim.GetTrimTabSetting(ms_grpc.req(succ=True))
+    apparentWind = stubTrim.GetTrimTabSetting(trimAngle)
+
+
 
 def cleanup():
     pass
+
+
 
 try:
     while True:

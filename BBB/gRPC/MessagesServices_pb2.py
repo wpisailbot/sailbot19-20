@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 import TrimTabMessages_pb2 as TrimTabMessages__pb2
-import PWMMessages_pb2 as PWMMessages__pb2
+import ArduinoMessages_pb2 as ArduinoMessages__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -22,9 +22,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x16MessagesServices.proto\x1a\x15TrimTabMessages.proto\x1a\x11PWMMessages.proto\"\xbf\x01\n\nAirmarData\x12\x12\n\nwind_speed\x18\x01 \x01(\x02\x12\x10\n\x08wind_dir\x18\x02 \x01(\x02\x12\x10\n\x08\x61ir_temp\x18\x03 \x01(\x02\x12\x0f\n\x07rel_hum\x18\x04 \x01(\x02\x12\x12\n\nbaro_press\x18\x05 \x01(\x02\x1a*\n\x07\x43ompass\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\x1a(\n\tPitchRoll\x12\r\n\x05pitch\x18\x01 \x01(\x02\x12\x0c\n\x04roll\x18\x02 \x01(\x02\"\x13\n\x03req\x12\x0c\n\x04succ\x18\x01 \x01(\x08\"M\n\rControlValues\x12\x13\n\x0brudderAngle\x18\x01 \x01(\x02\x12\x11\n\ttrimAngle\x18\x02 \x01(\x02\x12\x14\n\x0c\x62\x61llastAngle\x18\x03 \x01(\x02\" \n\x08Readings\x12\x14\n\x0c\x61pparentWind\x18\x01 \x01(\x02\x32\x34\n\x0c\x41irmarReader\x12$\n\rGetAirmarData\x12\x04.req\x1a\x0b.AirmarData\"\x00\x32K\n\x15\x41utonomousValueReader\x12\x32\n\x13GetAutonomousValues\x12\t.Readings\x1a\x0e.ControlValues\"\x00\x32/\n\tPWMReader\x12\"\n\x0cGetPWMInputs\x12\x04.req\x1a\n.PWMValues\"\x00\x32\x39\n\x0cRudderGetter\x12)\n\x10GetRudderSetting\x12\x04.req\x1a\r.ControlAngle\"\x00\x32\x44\n\rTrimTabGetter\x12\x33\n\x11GetTrimTabSetting\x12\r.ApparentWind\x1a\r.ControlAngle\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x16MessagesServices.proto\x1a\x15TrimTabMessages.proto\x1a\x15\x41rduinoMessages.proto\"\xbf\x01\n\nAirmarData\x12\x12\n\nwind_speed\x18\x01 \x01(\x02\x12\x10\n\x08wind_dir\x18\x02 \x01(\x02\x12\x10\n\x08\x61ir_temp\x18\x03 \x01(\x02\x12\x0f\n\x07rel_hum\x18\x04 \x01(\x02\x12\x12\n\nbaro_press\x18\x05 \x01(\x02\x1a*\n\x07\x43ompass\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\x1a(\n\tPitchRoll\x12\r\n\x05pitch\x18\x01 \x01(\x02\x12\x0c\n\x04roll\x18\x02 \x01(\x02\"\x13\n\x03req\x12\x0c\n\x04succ\x18\x01 \x01(\x08\"M\n\rControlValues\x12\x13\n\x0brudderAngle\x18\x01 \x01(\x02\x12\x11\n\ttrimAngle\x18\x02 \x01(\x02\x12\x14\n\x0c\x62\x61llastAngle\x18\x03 \x01(\x02\" \n\x08Readings\x12\x14\n\x0c\x61pparentWind\x18\x01 \x01(\x02\"\x1d\n\x0eServer_request\x12\x0b\n\x03req\x18\x01 \x01(\x08\"\x8e\x01\n\x0fServer_response\x12\x1a\n\x12\x61pparent_trim_wind\x18\x01 \x01(\x02\x12\x12\n\ntrim_angle\x18\x02 \x01(\x02\x12\x14\n\x0crudder_angle\x18\x03 \x01(\x02\x12\x15\n\rballast_angle\x18\x04 \x01(\x02\x12\x1e\n\npwm_values\x18\x05 \x01(\x0b\x32\n.PWMValues24\n\x0c\x41irmarReader\x12$\n\rGetAirmarData\x12\x04.req\x1a\x0b.AirmarData\"\x00\x32K\n\x15\x41utonomousValueReader\x12\x32\n\x13GetAutonomousValues\x12\t.Readings\x1a\x0e.ControlValues\"\x00\x32\x39\n\tPWMReader\x12,\n\x0cGetPWMInputs\x12\x0e.ControlAngles\x1a\n.PWMValues\"\x00\x32\x41\n\rTrimTabGetter\x12\x30\n\x11GetTrimTabSetting\x12\r.ApparentWind\x1a\n.TrimAngle\"\x00\x32\x45\n\tWebserver\x12\x38\n\x11MakeServerRequest\x12\x0f.Server_request\x1a\x10.Server_response\"\x00\x62\x06proto3')
   ,
-  dependencies=[TrimTabMessages__pb2.DESCRIPTOR,PWMMessages__pb2.DESCRIPTOR,])
+  dependencies=[TrimTabMessages__pb2.DESCRIPTOR,ArduinoMessages__pb2.DESCRIPTOR,])
 
 
 
@@ -69,8 +69,8 @@ _AIRMARDATA_COMPASS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=176,
-  serialized_end=218,
+  serialized_start=180,
+  serialized_end=222,
 )
 
 _AIRMARDATA_PITCHROLL = _descriptor.Descriptor(
@@ -106,8 +106,8 @@ _AIRMARDATA_PITCHROLL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=220,
-  serialized_end=260,
+  serialized_start=224,
+  serialized_end=264,
 )
 
 _AIRMARDATA = _descriptor.Descriptor(
@@ -164,8 +164,8 @@ _AIRMARDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=69,
-  serialized_end=260,
+  serialized_start=73,
+  serialized_end=264,
 )
 
 
@@ -195,8 +195,8 @@ _REQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=262,
-  serialized_end=281,
+  serialized_start=266,
+  serialized_end=285,
 )
 
 
@@ -240,8 +240,8 @@ _CONTROLVALUES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=283,
-  serialized_end=360,
+  serialized_start=287,
+  serialized_end=364,
 )
 
 
@@ -271,16 +271,109 @@ _READINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=362,
-  serialized_end=394,
+  serialized_start=366,
+  serialized_end=398,
+)
+
+
+_SERVER_REQUEST = _descriptor.Descriptor(
+  name='Server_request',
+  full_name='Server_request',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='req', full_name='Server_request.req', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=400,
+  serialized_end=429,
+)
+
+
+_SERVER_RESPONSE = _descriptor.Descriptor(
+  name='Server_response',
+  full_name='Server_response',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='apparent_trim_wind', full_name='Server_response.apparent_trim_wind', index=0,
+      number=1, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='trim_angle', full_name='Server_response.trim_angle', index=1,
+      number=2, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='rudder_angle', full_name='Server_response.rudder_angle', index=2,
+      number=3, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='ballast_angle', full_name='Server_response.ballast_angle', index=3,
+      number=4, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='pwm_values', full_name='Server_response.pwm_values', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=432,
+  serialized_end=574,
 )
 
 _AIRMARDATA_COMPASS.containing_type = _AIRMARDATA
 _AIRMARDATA_PITCHROLL.containing_type = _AIRMARDATA
+_SERVER_RESPONSE.fields_by_name['pwm_values'].message_type = ArduinoMessages__pb2._PWMVALUES
 DESCRIPTOR.message_types_by_name['AirmarData'] = _AIRMARDATA
 DESCRIPTOR.message_types_by_name['req'] = _REQ
 DESCRIPTOR.message_types_by_name['ControlValues'] = _CONTROLVALUES
 DESCRIPTOR.message_types_by_name['Readings'] = _READINGS
+DESCRIPTOR.message_types_by_name['Server_request'] = _SERVER_REQUEST
+DESCRIPTOR.message_types_by_name['Server_response'] = _SERVER_RESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 AirmarData = _reflection.GeneratedProtocolMessageType('AirmarData', (_message.Message,), {
@@ -327,6 +420,20 @@ Readings = _reflection.GeneratedProtocolMessageType('Readings', (_message.Messag
   })
 _sym_db.RegisterMessage(Readings)
 
+Server_request = _reflection.GeneratedProtocolMessageType('Server_request', (_message.Message,), {
+  'DESCRIPTOR' : _SERVER_REQUEST,
+  '__module__' : 'MessagesServices_pb2'
+  # @@protoc_insertion_point(class_scope:Server_request)
+  })
+_sym_db.RegisterMessage(Server_request)
+
+Server_response = _reflection.GeneratedProtocolMessageType('Server_response', (_message.Message,), {
+  'DESCRIPTOR' : _SERVER_RESPONSE,
+  '__module__' : 'MessagesServices_pb2'
+  # @@protoc_insertion_point(class_scope:Server_response)
+  })
+_sym_db.RegisterMessage(Server_response)
+
 
 
 _AIRMARREADER = _descriptor.ServiceDescriptor(
@@ -335,8 +442,8 @@ _AIRMARREADER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=396,
-  serialized_end=448,
+  serialized_start=576,
+  serialized_end=628,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetAirmarData',
@@ -359,8 +466,8 @@ _AUTONOMOUSVALUEREADER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=450,
-  serialized_end=525,
+  serialized_start=630,
+  serialized_end=705,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetAutonomousValues',
@@ -383,16 +490,16 @@ _PWMREADER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=2,
   serialized_options=None,
-  serialized_start=527,
-  serialized_end=574,
+  serialized_start=707,
+  serialized_end=764,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetPWMInputs',
     full_name='PWMReader.GetPWMInputs',
     index=0,
     containing_service=None,
-    input_type=_REQ,
-    output_type=PWMMessages__pb2._PWMVALUES,
+    input_type=ArduinoMessages__pb2._CONTROLANGLES,
+    output_type=ArduinoMessages__pb2._PWMVALUES,
     serialized_options=None,
   ),
 ])
@@ -401,38 +508,14 @@ _sym_db.RegisterServiceDescriptor(_PWMREADER)
 DESCRIPTOR.services_by_name['PWMReader'] = _PWMREADER
 
 
-_RUDDERGETTER = _descriptor.ServiceDescriptor(
-  name='RudderGetter',
-  full_name='RudderGetter',
-  file=DESCRIPTOR,
-  index=3,
-  serialized_options=None,
-  serialized_start=576,
-  serialized_end=633,
-  methods=[
-  _descriptor.MethodDescriptor(
-    name='GetRudderSetting',
-    full_name='RudderGetter.GetRudderSetting',
-    index=0,
-    containing_service=None,
-    input_type=_REQ,
-    output_type=TrimTabMessages__pb2._CONTROLANGLE,
-    serialized_options=None,
-  ),
-])
-_sym_db.RegisterServiceDescriptor(_RUDDERGETTER)
-
-DESCRIPTOR.services_by_name['RudderGetter'] = _RUDDERGETTER
-
-
 _TRIMTABGETTER = _descriptor.ServiceDescriptor(
   name='TrimTabGetter',
   full_name='TrimTabGetter',
   file=DESCRIPTOR,
-  index=4,
+  index=3,
   serialized_options=None,
-  serialized_start=635,
-  serialized_end=703,
+  serialized_start=766,
+  serialized_end=831,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetTrimTabSetting',
@@ -440,12 +523,36 @@ _TRIMTABGETTER = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=TrimTabMessages__pb2._APPARENTWIND,
-    output_type=TrimTabMessages__pb2._CONTROLANGLE,
+    output_type=TrimTabMessages__pb2._TRIMANGLE,
     serialized_options=None,
   ),
 ])
 _sym_db.RegisterServiceDescriptor(_TRIMTABGETTER)
 
 DESCRIPTOR.services_by_name['TrimTabGetter'] = _TRIMTABGETTER
+
+
+_WEBSERVER = _descriptor.ServiceDescriptor(
+  name='Webserver',
+  full_name='Webserver',
+  file=DESCRIPTOR,
+  index=4,
+  serialized_options=None,
+  serialized_start=833,
+  serialized_end=902,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='MakeServerRequest',
+    full_name='Webserver.MakeServerRequest',
+    index=0,
+    containing_service=None,
+    input_type=_SERVER_REQUEST,
+    output_type=_SERVER_RESPONSE,
+    serialized_options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_WEBSERVER)
+
+DESCRIPTOR.services_by_name['Webserver'] = _WEBSERVER
 
 # @@protoc_insertion_point(module_scope)

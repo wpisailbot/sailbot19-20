@@ -36,6 +36,11 @@ volatile float windAngle; // Mapped reading from wind direction sensor on the fr
 volatile uint32_t control_angle;
 bool readingNow = false;
 
+int timeSinceLastComm = 0;
+int timeout = 1000;
+
+TrimAngle_TRIM_STATE state = TrimAngle_TRIM_STATE_MIN_LIFT;
+
 void setup()
 {
   // Show that we're on
@@ -78,13 +83,10 @@ void simpleSendReceive()
   } else {
     if(!readingNow){
       writeProtobuf();
-      delay(100);
     }
     if(readingNow){
       readProtobuf();
-      delay(100);
     }
-    delay(100);
   }
 }
 
@@ -100,11 +102,11 @@ void readProtobuf()
     }
   
     // Prepare a struct to save the message to
-    ControlAngle controlAngle = ControlAngle_init_zero;
+    TrimAngle controlAngle = TrimAngle_init_zero;
   
     // Decode the message and save to a struct
     pb_istream_t stream_rx = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
-    bool status_rx = pb_decode(&stream_rx, ControlAngle_fields, &controlAngle);
+    bool status_rx = pb_decode(&stream_rx, TrimAngle_fields, &controlAngle);
   
     // Couldn't decode the message, so want to reconnect
     if (!status_rx)
@@ -114,12 +116,14 @@ void readProtobuf()
       //return;
     }
   
-    control_angle = controlAngle.control_angle;
-    Serial.print("Control angle: ");
-    Serial.println(control_angle);
+    control_angle = (controlAngle.control_angle-980)*PWMScaler;
+    state = controlAngle.state;
+//    Serial.print("Control angle: ");
+//    Serial.println(control_angle);
   
     missed_msgs = 0;
     readingNow = false;
+    timeSinceLastComm = millis();
   }
 }
 
@@ -130,30 +134,33 @@ void writeProtobuf()
   size_t message_length;
 
   // Create a stream that will write to the buffer
-  pb_ostream_t stream = pb_ostream_from_buffer(tx_buffer, sizeof(tx_buffer));
+  pb_ostream_t stream_tx = pb_ostream_from_buffer(tx_buffer, sizeof(tx_buffer));
 
   // Fill in the wind dir
   apparentWind.apparent_wind = windAngle;
 //  apparentWind.apparent_wind = 3;
 
-  Serial.print("Wind Angle: ");
-  Serial.println(windAngle);
+//  Serial.print("Wind Angle: ");
+//  Serial.println(windAngle);
   
   // Encode the message
-  bool status_tx = pb_encode(&stream, ApparentWind_fields, &apparentWind);
-  message_length = stream.bytes_written;
+  bool status_tx = pb_encode(&stream_tx, ApparentWind_fields, &apparentWind);
+  message_length = stream_tx.bytes_written;
 
   /* Then just check for any errors.. */
   if (!status_tx)
   {
-    printf("Encoding failed: %s\n", PB_GET_ERROR(&stream));
+    printf("Encoding failed: %s\n", PB_GET_ERROR(&stream_tx));
     return;
   }
   
   if(message_length > 0){
     int data =  client.write(tx_buffer, message_length);
+//    Serial.print("Wrote: ");
+//    Serial.println(data);
     if(data > 0){
       readingNow = true;
+      timeSinceLastComm = millis();
     }
   }
 }
@@ -204,9 +211,9 @@ void clearConnection()
  */
 void servoControl()
 {
-  // Read, format, and scale angle of attached reading from the encoder
-  windAngle = analogRead(potPin) - POT_HEADWIND; // reads angle of attack data
-  windAngle = windAngle < 0 ? POT_HEADWIND + windAngle + (1023 - POT_HEADWIND) : windAngle;
+  // Read, format, and scale angle of attack reading from the encoder
+  windAngle = analogRead(potPin) - POT_HEADWIND; // reads angle of attack data and centers values on headwind
+  windAngle = windAngle < 0 ? POT_HEADWIND + windAngle + (1023 - POT_HEADWIND) : windAngle; // wraps angle around
   windAngle = windAngle / 1023.0 * 360.0 - 180; // Convert to degrees, positive when wind from 0-180, negative when wind 180-359
 
   // Set debug LEDs to on to indicate servo control is active
@@ -214,7 +221,62 @@ void servoControl()
   digitalWrite(led2Pin, HIGH);
 
   // Write servo position to one read from the Arduino
-  servo.write(SERVO_CTR + control_angle - 200 - 90);
+  //  servo.write(SERVO_CTR + control_angle - 200 - 90);
+
+  switch(state){
+    case TrimAngle_TRIM_STATE_MAX_LIFT_PORT:
+      //if the lift angle isnt enough and the heel angle isnt too much the angle of attack is increased
+      if ((MAX_LIFT_ANGLE > windAngle+1)) {  //&& (abs(heelAngle) <= maxHeelAngle))) {
+        if (control_angle >= 55) { }
+        else {
+          control_angle++;
+        }
+      }
+    
+      //if the lift angle is too much or the max heel angle is too much the sail lightens up
+      else if ((MAX_LIFT_ANGLE < windAngle)) {  //&& (abs(heelAngle) <= maxHeelAngle)) || (abs(heelAngle) >= maxHeelAngle)) {
+        if (control_angle <= -55) {  }
+        else {
+          control_angle--;
+        }
+      }
+      servo.write(SERVO_CTR + control_angle - 200 - 90);
+      break;
+    case TrimAngle_TRIM_STATE_MAX_LIFT_STBD:
+      windAngle*=-1;
+      //if the lift angle isnt enough and the heel angle isnt too much the angle of attack is increased
+      if ((MAX_LIFT_ANGLE > windAngle+1)) {  //&& (abs(heelAngle) <= maxHeelAngle))) {
+        if (control_angle >= 55) { }
+        else {
+          control_angle++;
+        }
+      }
+    
+      //if the lift angle is too much or the max heel angle is too much the sail lightens up
+      else if ((MAX_LIFT_ANGLE < windAngle)) {  //&& (abs(heelAngle) <= maxHeelAngle)) || (abs(heelAngle) >= maxHeelAngle)) {
+        if (control_angle <= -55) {  }
+        else {
+          control_angle--;
+        }
+      }
+      servo.write(SERVO_CTR + control_angle - 200 - 90);
+      break;
+    case TrimAngle_TRIM_STATE_MAX_DRAG_PORT:
+      servo.write(SERVO_CTR - 55);
+      break;
+    case TrimAngle_TRIM_STATE_MAX_DRAG_STBD:
+      servo.write(SERVO_CTR + 55);
+      break;
+    case TrimAngle_TRIM_STATE_MIN_LIFT:
+      servo.write(SERVO_CTR);
+      break;
+    case TrimAngle_TRIM_STATE_MANUAL:
+      servo.write(control_angle);
+      break;
+    default:
+      servo.write(control_angle);
+      break;
+  }
 }
 
 void blinkState()
@@ -222,14 +284,47 @@ void blinkState()
   // Toggle state
   ledState = ledState == LOW ? HIGH : LOW;
 
+  digitalWrite(powerLED, ledState);
+
   // Blink WiFi led
   if (!connection)
   {
-    digitalWrite(wifiLED, ledState);
+    digitalWrite(wifiLED, !ledState);
   }
   else
   {
     digitalWrite(wifiLED, HIGH);
+  }
+
+  switch(state){
+    case TrimAngle_TRIM_STATE_MAX_LIFT_PORT:
+      digitalWrite(led1Pin, HIGH);
+      digitalWrite(led2Pin, LOW);
+      break;
+    case TrimAngle_TRIM_STATE_MAX_LIFT_STBD:
+      digitalWrite(led1Pin, ledState);
+      digitalWrite(led2Pin, LOW);
+      break;
+    case TrimAngle_TRIM_STATE_MAX_DRAG_PORT:
+      digitalWrite(led1Pin, LOW);
+      digitalWrite(led2Pin, HIGH);
+      break;
+    case TrimAngle_TRIM_STATE_MAX_DRAG_STBD:
+      digitalWrite(led1Pin, LOW);
+      digitalWrite(led2Pin, ledState);
+      break;
+    case TrimAngle_TRIM_STATE_MIN_LIFT:
+      digitalWrite(led1Pin, LOW);
+      digitalWrite(led2Pin, LOW);
+      break;
+    case TrimAngle_TRIM_STATE_MANUAL:
+      digitalWrite(led1Pin, HIGH);
+      digitalWrite(led2Pin, HIGH);
+      break;
+    default:
+      digitalWrite(led1Pin, HIGH);
+      digitalWrite(led2Pin, HIGH);
+      break;
   }
 }
 
