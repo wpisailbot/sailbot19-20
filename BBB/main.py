@@ -18,8 +18,8 @@ signal.signal(signal.SIGINT, keyboardInterruptHandler)
 
 apparentWind = tt.ApparentWind()
 controlAngles = PWMmsgs.ControlAngles()
-controlAngles.rudder_angle = 0
-controlAngles.ballast_angle = 0
+controlAngles.rudder_angle = 15
+controlAngles.ballast_angle = 12
 trimAngle = tt.TrimAngle()
 PWMInput = PWMmsgs.PWMValues()
 PWMInput.ch1 = 1
@@ -35,7 +35,7 @@ PWMInput.ch6 = 6
 
 channelTrim = grpc.insecure_channel('localhost:50050')
 stubTrim = ms_grpc.TrimTabGetterStub(channelTrim)
-channelPWM = grpc.insecure_channel('localhost:50051')
+channelPWM = grpc.insecure_channel('localhost:50052')
 stubPWM = ms_grpc.PWMReaderStub(channelPWM)
 
 
