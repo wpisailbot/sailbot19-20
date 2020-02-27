@@ -17,8 +17,6 @@ class AirmarReaderServicer(ms_grpc.AirmarReaderServicer):
     def GetAirmarData(self, request, context):
         AirmarData = ms.AirmarData()
 
-        print("Servicing request")
-
         AirmarData.apparentWind.speed           = 1.0
         AirmarData.apparentWind.direction       = 2.0
         AirmarData.theoreticalWind.speed        = 3.0
@@ -43,7 +41,7 @@ class AirmarReaderServicer(ms_grpc.AirmarReaderServicer):
         AirmarData.pitchRoll.pitch              = 22.0
         AirmarData.pitchRoll.roll               = 23.0
         AirmarData.rel_hum                      = 24.0      
-        print("Filled out variable")
+
         return AirmarData
 
 
