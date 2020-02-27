@@ -20,14 +20,14 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x15TrimTabMessages.proto\"\xbc\x01\n\tTrimAngle\x12\x15\n\rcontrol_angle\x18\x01 \x01(\r\x12$\n\x05state\x18\x02 \x01(\x0e\x32\x15.TrimAngle.TRIM_STATE\"r\n\nTRIM_STATE\x12\x11\n\rMAX_LIFT_PORT\x10\x00\x12\x11\n\rMAX_LIFT_STBD\x10\x01\x12\x11\n\rMAX_DRAG_PORT\x10\x02\x12\x11\n\rMAX_DRAG_STBD\x10\x03\x12\x0c\n\x08MIN_LIFT\x10\x04\x12\n\n\x06MANUAL\x10\x05\"%\n\x0c\x41pparentWind\x12\x15\n\rapparent_wind\x18\x01 \x01(\x02\x62\x06proto3')
+  serialized_pb=_b('\n\x15TrimTabMessages.proto\"\xbc\x01\n\tTrimState\x12\x15\n\rcontrol_angle\x18\x01 \x01(\r\x12$\n\x05state\x18\x02 \x01(\x0e\x32\x15.TrimState.TRIM_STATE\"r\n\nTRIM_STATE\x12\x11\n\rMAX_LIFT_PORT\x10\x00\x12\x11\n\rMAX_LIFT_STBD\x10\x01\x12\x11\n\rMAX_DRAG_PORT\x10\x02\x12\x11\n\rMAX_DRAG_STBD\x10\x03\x12\x0c\n\x08MIN_LIFT\x10\x04\x12\n\n\x06MANUAL\x10\x05\"*\n\x11\x41pparentWind_Trim\x12\x15\n\rapparent_wind\x18\x01 \x01(\x02\x62\x06proto3')
 )
 
 
 
-_TRIMANGLE_TRIM_STATE = _descriptor.EnumDescriptor(
+_TRIMSTATE_TRIM_STATE = _descriptor.EnumDescriptor(
   name='TRIM_STATE',
-  full_name='TrimAngle.TRIM_STATE',
+  full_name='TrimState.TRIM_STATE',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -61,25 +61,25 @@ _TRIMANGLE_TRIM_STATE = _descriptor.EnumDescriptor(
   serialized_start=100,
   serialized_end=214,
 )
-_sym_db.RegisterEnumDescriptor(_TRIMANGLE_TRIM_STATE)
+_sym_db.RegisterEnumDescriptor(_TRIMSTATE_TRIM_STATE)
 
 
-_TRIMANGLE = _descriptor.Descriptor(
-  name='TrimAngle',
-  full_name='TrimAngle',
+_TRIMSTATE = _descriptor.Descriptor(
+  name='TrimState',
+  full_name='TrimState',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='control_angle', full_name='TrimAngle.control_angle', index=0,
+      name='control_angle', full_name='TrimState.control_angle', index=0,
       number=1, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='state', full_name='TrimAngle.state', index=1,
+      name='state', full_name='TrimState.state', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -90,7 +90,7 @@ _TRIMANGLE = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
-    _TRIMANGLE_TRIM_STATE,
+    _TRIMSTATE_TRIM_STATE,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -103,15 +103,15 @@ _TRIMANGLE = _descriptor.Descriptor(
 )
 
 
-_APPARENTWIND = _descriptor.Descriptor(
-  name='ApparentWind',
-  full_name='ApparentWind',
+_APPARENTWIND_TRIM = _descriptor.Descriptor(
+  name='ApparentWind_Trim',
+  full_name='ApparentWind_Trim',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='apparent_wind', full_name='ApparentWind.apparent_wind', index=0,
+      name='apparent_wind', full_name='ApparentWind_Trim.apparent_wind', index=0,
       number=1, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -130,28 +130,28 @@ _APPARENTWIND = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=216,
-  serialized_end=253,
+  serialized_end=258,
 )
 
-_TRIMANGLE.fields_by_name['state'].enum_type = _TRIMANGLE_TRIM_STATE
-_TRIMANGLE_TRIM_STATE.containing_type = _TRIMANGLE
-DESCRIPTOR.message_types_by_name['TrimAngle'] = _TRIMANGLE
-DESCRIPTOR.message_types_by_name['ApparentWind'] = _APPARENTWIND
+_TRIMSTATE.fields_by_name['state'].enum_type = _TRIMSTATE_TRIM_STATE
+_TRIMSTATE_TRIM_STATE.containing_type = _TRIMSTATE
+DESCRIPTOR.message_types_by_name['TrimState'] = _TRIMSTATE
+DESCRIPTOR.message_types_by_name['ApparentWind_Trim'] = _APPARENTWIND_TRIM
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-TrimAngle = _reflection.GeneratedProtocolMessageType('TrimAngle', (_message.Message,), {
-  'DESCRIPTOR' : _TRIMANGLE,
+TrimState = _reflection.GeneratedProtocolMessageType('TrimState', (_message.Message,), {
+  'DESCRIPTOR' : _TRIMSTATE,
   '__module__' : 'TrimTabMessages_pb2'
-  # @@protoc_insertion_point(class_scope:TrimAngle)
+  # @@protoc_insertion_point(class_scope:TrimState)
   })
-_sym_db.RegisterMessage(TrimAngle)
+_sym_db.RegisterMessage(TrimState)
 
-ApparentWind = _reflection.GeneratedProtocolMessageType('ApparentWind', (_message.Message,), {
-  'DESCRIPTOR' : _APPARENTWIND,
+ApparentWind_Trim = _reflection.GeneratedProtocolMessageType('ApparentWind_Trim', (_message.Message,), {
+  'DESCRIPTOR' : _APPARENTWIND_TRIM,
   '__module__' : 'TrimTabMessages_pb2'
-  # @@protoc_insertion_point(class_scope:ApparentWind)
+  # @@protoc_insertion_point(class_scope:ApparentWind_Trim)
   })
-_sym_db.RegisterMessage(ApparentWind)
+_sym_db.RegisterMessage(ApparentWind_Trim)
 
 
 # @@protoc_insertion_point(module_scope)

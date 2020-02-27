@@ -3,7 +3,7 @@ import "TrimTabMessages.proto";
 import "ArduinoMessages.proto";
 
 service AirmarReader {
-    rpc GetAirmarData(req) returns (AirmarData) {}
+    rpc GetAirmarData(Server_request) returns (AirmarData) {}
 }
 
 service AutonomousValueReader {
@@ -12,22 +12,39 @@ service AutonomousValueReader {
 
 service PWMReader {
     rpc GetPWMInputs(ControlAngles) returns (PWMValues) {}
+    rpc GetPWMValues(Server_request) returns (PWMValues) {}
+    rpc GetControlAngles(Server_request) returns (ControlAngles) {}
 }
 
 service TrimTabGetter {
-    rpc GetTrimTabSetting(ApparentWind) returns (TrimAngle) {}
-}
-
-service Webserver{
-    rpc MakeServerRequest(Server_request) returns (Server_response) {}
+    rpc SetTrimTabSetting(TrimState) returns (ApparentWind_Trim) {}
+    rpc GetTrimState(Server_request) returns (TrimState) {}
+    rpc GetApparentWind(Server_request) returns (ApparentWind_Trim) {}
 }
 
 message AirmarData {
-    float wind_speed = 1;   // Knots, 0.1 res
-    float wind_dir = 2;     // Degs, 0.1 res
-    float air_temp = 3;     // C, 0.1 res
-    float rel_hum = 4;      // %, 0.1 res
-    float baro_press = 5;   // hPa, 0.1 res
+    message ApparentWind_Airmar{
+        float speed = 1;// Knots, 0.1 res
+        float direction = 2;// Degs, 0.1 res
+    }
+
+    message TheoreticalWind{
+        float speed = 1;// Knots, 0.1 res
+        float direction = 2;// Degs, 0.1 res
+    }
+
+    message Temperature{
+        float air_temp = 1;     // C, 0.1 res
+        float wind_chill = 2;   // C, 0.1 res
+    }
+    
+    message GPS {
+        float lat = 1;
+        float lon = 2;
+        float alt = 3;
+        float ground_speed = 4;
+        float ground_course = 5;
+    }
 
     message Compass{
         // Degs, 0-359.9 range, 0.1 res
@@ -35,16 +52,35 @@ message AirmarData {
         float y = 2;
         float z = 3;
     }
+
+    message Acceleration {
+        float x = 1;
+        float y = 2;
+        float z = 3;
+    }
+
+    message RateGyros {
+        float phi_dot = 1;
+        float theta_dot = 2;
+        float psi_dot = 3;
+    }
     
     message PitchRoll{
         // Degs, 50 deg range, 0.1 res
         float pitch = 1;
         float roll = 2;
     }
-}
 
-message req{
-    bool succ = 1;
+    ApparentWind_Airmar apparentWind = 1;
+    TheoreticalWind theoreticalWind = 2;
+    float baro_press = 3;   // hPa, 0.1 res
+    Temperature temperature = 4;
+    GPS gps = 5;
+    Compass compass = 6;
+    Acceleration acceleration = 7;
+    RateGyros rateGyros = 9;
+    PitchRoll pitchRoll = 10;
+    float rel_hum = 11;      // %, 0.1 res    
 }
 
 message ControlValues {
@@ -59,12 +95,4 @@ message Readings{
 
 message Server_request{
     bool req = 1;
-}
-
-message Server_response{
-    float apparent_trim_wind = 1;
-    float trim_angle = 2;
-    float rudder_angle = 3;
-    float ballast_angle = 4;
-    PWMValues pwm_values = 5;
 }

@@ -18,7 +18,7 @@ class AirmarReaderStub(object):
     """
     self.GetAirmarData = channel.unary_unary(
         '/AirmarReader/GetAirmarData',
-        request_serializer=MessagesServices__pb2.req.SerializeToString,
+        request_serializer=MessagesServices__pb2.Server_request.SerializeToString,
         response_deserializer=MessagesServices__pb2.AirmarData.FromString,
         )
 
@@ -39,7 +39,7 @@ def add_AirmarReaderServicer_to_server(servicer, server):
   rpc_method_handlers = {
       'GetAirmarData': grpc.unary_unary_rpc_method_handler(
           servicer.GetAirmarData,
-          request_deserializer=MessagesServices__pb2.req.FromString,
+          request_deserializer=MessagesServices__pb2.Server_request.FromString,
           response_serializer=MessagesServices__pb2.AirmarData.SerializeToString,
       ),
   }
@@ -105,6 +105,16 @@ class PWMReaderStub(object):
         request_serializer=ArduinoMessages__pb2.ControlAngles.SerializeToString,
         response_deserializer=ArduinoMessages__pb2.PWMValues.FromString,
         )
+    self.GetPWMValues = channel.unary_unary(
+        '/PWMReader/GetPWMValues',
+        request_serializer=MessagesServices__pb2.Server_request.SerializeToString,
+        response_deserializer=ArduinoMessages__pb2.PWMValues.FromString,
+        )
+    self.GetControlAngles = channel.unary_unary(
+        '/PWMReader/GetControlAngles',
+        request_serializer=MessagesServices__pb2.Server_request.SerializeToString,
+        response_deserializer=ArduinoMessages__pb2.ControlAngles.FromString,
+        )
 
 
 class PWMReaderServicer(object):
@@ -118,6 +128,20 @@ class PWMReaderServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def GetPWMValues(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def GetControlAngles(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_PWMReaderServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -125,6 +149,16 @@ def add_PWMReaderServicer_to_server(servicer, server):
           servicer.GetPWMInputs,
           request_deserializer=ArduinoMessages__pb2.ControlAngles.FromString,
           response_serializer=ArduinoMessages__pb2.PWMValues.SerializeToString,
+      ),
+      'GetPWMValues': grpc.unary_unary_rpc_method_handler(
+          servicer.GetPWMValues,
+          request_deserializer=MessagesServices__pb2.Server_request.FromString,
+          response_serializer=ArduinoMessages__pb2.PWMValues.SerializeToString,
+      ),
+      'GetControlAngles': grpc.unary_unary_rpc_method_handler(
+          servicer.GetControlAngles,
+          request_deserializer=MessagesServices__pb2.Server_request.FromString,
+          response_serializer=ArduinoMessages__pb2.ControlAngles.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
@@ -142,10 +176,20 @@ class TrimTabGetterStub(object):
     Args:
       channel: A grpc.Channel.
     """
-    self.GetTrimTabSetting = channel.unary_unary(
-        '/TrimTabGetter/GetTrimTabSetting',
-        request_serializer=TrimTabMessages__pb2.ApparentWind.SerializeToString,
-        response_deserializer=TrimTabMessages__pb2.TrimAngle.FromString,
+    self.SetTrimTabSetting = channel.unary_unary(
+        '/TrimTabGetter/SetTrimTabSetting',
+        request_serializer=TrimTabMessages__pb2.TrimState.SerializeToString,
+        response_deserializer=TrimTabMessages__pb2.ApparentWind_Trim.FromString,
+        )
+    self.GetTrimState = channel.unary_unary(
+        '/TrimTabGetter/GetTrimState',
+        request_serializer=MessagesServices__pb2.Server_request.SerializeToString,
+        response_deserializer=TrimTabMessages__pb2.TrimState.FromString,
+        )
+    self.GetApparentWind = channel.unary_unary(
+        '/TrimTabGetter/GetApparentWind',
+        request_serializer=MessagesServices__pb2.Server_request.SerializeToString,
+        response_deserializer=TrimTabMessages__pb2.ApparentWind_Trim.FromString,
         )
 
 
@@ -153,7 +197,21 @@ class TrimTabGetterServicer(object):
   # missing associated documentation comment in .proto file
   pass
 
-  def GetTrimTabSetting(self, request, context):
+  def SetTrimTabSetting(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def GetTrimState(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def GetApparentWind(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -163,54 +221,22 @@ class TrimTabGetterServicer(object):
 
 def add_TrimTabGetterServicer_to_server(servicer, server):
   rpc_method_handlers = {
-      'GetTrimTabSetting': grpc.unary_unary_rpc_method_handler(
-          servicer.GetTrimTabSetting,
-          request_deserializer=TrimTabMessages__pb2.ApparentWind.FromString,
-          response_serializer=TrimTabMessages__pb2.TrimAngle.SerializeToString,
+      'SetTrimTabSetting': grpc.unary_unary_rpc_method_handler(
+          servicer.SetTrimTabSetting,
+          request_deserializer=TrimTabMessages__pb2.TrimState.FromString,
+          response_serializer=TrimTabMessages__pb2.ApparentWind_Trim.SerializeToString,
+      ),
+      'GetTrimState': grpc.unary_unary_rpc_method_handler(
+          servicer.GetTrimState,
+          request_deserializer=MessagesServices__pb2.Server_request.FromString,
+          response_serializer=TrimTabMessages__pb2.TrimState.SerializeToString,
+      ),
+      'GetApparentWind': grpc.unary_unary_rpc_method_handler(
+          servicer.GetApparentWind,
+          request_deserializer=MessagesServices__pb2.Server_request.FromString,
+          response_serializer=TrimTabMessages__pb2.ApparentWind_Trim.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
       'TrimTabGetter', rpc_method_handlers)
-  server.add_generic_rpc_handlers((generic_handler,))
-
-
-class WebserverStub(object):
-  # missing associated documentation comment in .proto file
-  pass
-
-  def __init__(self, channel):
-    """Constructor.
-
-    Args:
-      channel: A grpc.Channel.
-    """
-    self.MakeServerRequest = channel.unary_unary(
-        '/Webserver/MakeServerRequest',
-        request_serializer=MessagesServices__pb2.Server_request.SerializeToString,
-        response_deserializer=MessagesServices__pb2.Server_response.FromString,
-        )
-
-
-class WebserverServicer(object):
-  # missing associated documentation comment in .proto file
-  pass
-
-  def MakeServerRequest(self, request, context):
-    # missing associated documentation comment in .proto file
-    pass
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
-
-
-def add_WebserverServicer_to_server(servicer, server):
-  rpc_method_handlers = {
-      'MakeServerRequest': grpc.unary_unary_rpc_method_handler(
-          servicer.MakeServerRequest,
-          request_deserializer=MessagesServices__pb2.Server_request.FromString,
-          response_serializer=MessagesServices__pb2.Server_response.SerializeToString,
-      ),
-  }
-  generic_handler = grpc.method_handlers_generic_handler(
-      'Webserver', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))

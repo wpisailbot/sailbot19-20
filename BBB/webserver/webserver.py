@@ -1,5 +1,9 @@
 from gRPC import MessagesServices_pb2 as ms
 from gRPC import MessagesServices_pb2_grpc as ms_grpc
+from gRPC import ArduinoMessages_pb2 as PWMmsgs
+from gRPC import ArduinoMessages_pb2_grpc as PWMmsgs_grpc
+from gRPC import TrimTabMessages_pb2 as tt
+from gRPC import TrimTabMessages_pb2_grpc as tt_grpc
 import grpc
 import Constants as CONST
 from flask import Flask, render_template
@@ -58,16 +62,16 @@ def Subsystem_state():
     Flask server
     :returns [string] stringified proto.vessel_state returned by the gRPC client routine
     """
-    responsePWM = ms.PWMValues()
-    responseControlAngles = ms.ControlAngles()
-    responseTrimState = ms.TrimState()
-    responseApparentWind = ms.ApparentWind()
+    responsePWM = PWMmsgs.PWMValues()
+    responseControlAngles = PWMmsgs.ControlAngles()
+    responseTrimState = tt.TrimState()
+    responseApparentWind = tt.ApparentWind_Trim()
 
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel('localhost:50052') as channel:
         stubPWM = ms_grpc.PWMReaderStub(channel)
         responsePWM = stubPWM.GetPWMValues(ms.Server_request(req=True))
         responseControlAngles = stubPWM.GetControlAngles(ms.Server_request(req=True))
-
+    with grpc.insecure_channel('localhost:50050') as channel:
         stubTrim = ms_grpc.TrimTabGetterStub(channel)
         responseTrimState = stubTrim.GetTrimState(ms.Server_request(req=True))
         responseApparentWind = stubTrim.GetApparentWind(ms.Server_request(req=True))
