@@ -4,8 +4,8 @@ PROTOC_PATH=protoc.exe # modify this if your protoc is in a different place
 NANOPB_PATH=../nanopb*/generator-bin/protoc # moodify this if your nanopb copy is elsewhere
 
 # Generate BBB proto files
-$PROTOC_PATH -I=Protos --python_out=BBB/gRPC Protos/*.proto
-py -3 -m grpc_tools.protoc -I=Protos --python_out=BBB/gRPC --grpc_python_out=BBB/gRPC Protos/*.proto
+$PROTOC_PATH -I=Protos --python_out=BBB/Sailbot/gRPC Protos/*.proto
+py -3 -m grpc_tools.protoc -I=Protos --python_out=BBB/gRPC --grpc_python_out=BBB/Sailbot/gRPC Protos/*.proto
 
 # Generate Teensy proto files
 $NANOPB_PATH --nanopb_out=./custom_libraries/nanopb-lib/ Protos/TrimTabMessages.proto

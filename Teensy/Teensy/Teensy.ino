@@ -212,9 +212,9 @@ void clearConnection()
 void servoControl()
 {
   // Read, format, and scale angle of attack reading from the encoder
-  windAngle = analogRead(potPin) - POT_HEADWIND; // reads angle of attack data and centers values on headwind
+  windAngle = analogRead(potPin) - POT_HEADWIND;                                            // reads angle of attack data and centers values on headwind
   windAngle = windAngle < 0 ? POT_HEADWIND + windAngle + (1023 - POT_HEADWIND) : windAngle; // wraps angle around
-  windAngle = windAngle / 1023.0 * 360.0 - 180; // Convert to degrees, positive when wind from 0-180, negative when wind 180-359
+  windAngle = windAngle / 1023.0 * 360.0 - 180;                                             // Convert to degrees, positive when wind from 0-180, negative when wind 180-359
 
   // Set debug LEDs to on to indicate servo control is active
   digitalWrite(led1Pin, HIGH);

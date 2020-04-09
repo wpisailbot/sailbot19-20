@@ -20,6 +20,12 @@ import sys
 
 spi = SPI(1,0)
 
+spi.msh = 1*pow(10, 6)
+spi.lsbfirst = False
+spi.cshigh = False
+spi.bpw = 8
+spi.mode = 0b00
+
 # message = "hello SPI, do I work??"
 
 pwm_values = PWMmsgs.PWMValues()
@@ -35,6 +41,8 @@ control_angles.rudder_angle = 91
 
 control_angles.ballast_angle = 92
 
+
+# Airmar data is too big to be sent without errors
 AirmarData = ms.AirmarData()
 
 AirmarData.apparentWind.speed           = 1.0
@@ -62,54 +70,54 @@ AirmarData.pitchRoll.pitch              = 22.0
 AirmarData.pitchRoll.roll               = 23.0
 AirmarData.rel_hum                      = 24.0 
 
-message = AirmarData.SerializeToString()
+message = pwm_values.SerializeToString()
 
 def str2SPI(msg):
     int_array = []
 
+    print("Letters:")
     for letter in repr(msg):
         int_array.append(int(binascii.hexlify(letter),16))
+        # print(letter)
     
+    # print(int_array)
+
     return int_array
 
 def SPI2str(spi_msg):
     message = ""
-    for x in spi_msg:
+    reshaped_msg = spi_msg[1:]
+    reshaped_msg.append(spi_msg[0])
+
+    print("SPI Reshaped")
+    print(reshaped_msg)
+
+    for x in reshaped_msg:
         message = message + binascii.unhexlify(hex(x)[2:])
     
     return literal_eval(message)
+    # return message
+
 
 print("Message: ")
 print(repr(message))
-print("sized:")
-print(str(sys.getsizeof(message)))
-print("By parts: ")
-print("Ch1: " + str(pwm_values.ch1))
-print("Ch2: " + str(pwm_values.ch2))
-print("Ch3: " + str(pwm_values.ch3))
-print("Ch4: " + str(pwm_values.ch4))
-print("Ch5: " + str(pwm_values.ch5))
-print("Ch6: " + str(pwm_values.ch6))
+# print("sized:")
+# print(str(sys.getsizeof(message)))
 spi_msg = str2SPI(message)
 print("SPI sent")
 print(spi_msg)
-print("sized:")
-print(str(sys.getsizeof(spi_msg)))
 
-returned_msg = spi.xfer2(spi_msg)
+returned_msg = spi.xfer(spi_msg)
 print("SPI Returned")
 print(returned_msg)
 
 stringified_msg = SPI2str(returned_msg)
+print("SPI Received message")
+print(repr(stringified_msg))
 
-decodedProto = ms.AirmarData()
+decodedProto = PWMmsgs.PWMValues()
 decodedProto.ParseFromString(stringified_msg)
 
 print(str(decodedProto))
-# print("ballast_angle: " + str(decodedProto.ballast_angle))
-# print("Ch3: " + str(decodedProto.ch3))
-# print("Ch4: " + str(decodedProto.ch4))
-# print("Ch5: " + str(decodedProto.ch5))
-# print("Ch6: " + str(decodedProto.ch6))
 
 spi.close()
