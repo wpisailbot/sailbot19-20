@@ -16,21 +16,32 @@ service PWMReader {
     rpc GetControlAngles(Server_request) returns (ControlAngles) {}
 }
 
+service BBBSensorReader {
+    rpc GetSensorData(Server_request) returns (BBBSersorData) {}
+}
+
 service TrimTabGetter {
     rpc SetTrimTabSetting(TrimState) returns (ApparentWind_Trim) {}
     rpc GetTrimState(Server_request) returns (TrimState) {}
     rpc GetApparentWind(Server_request) returns (ApparentWind_Trim) {}
 }
 
+message BBBSersorData {
+    bool hall_port = 1;
+    bool hall_stbd = 2;
+    float pot_val = 3;
+    bool pot_centered = 4;
+}
+
 message AirmarData {
     message ApparentWind_Airmar{
-        float speed = 1;// Knots, 0.1 res
-        float direction = 2;// Degs, 0.1 res
+        float speed = 1; // Knots, 0.1 res
+        float direction = 2; // Degs, 0.1 res
     }
 
     message TheoreticalWind{
-        float speed = 1;// Knots, 0.1 res
-        float direction = 2;// Degs, 0.1 res
+        float speed = 1; // Knots, 0.1 res
+        float direction = 2; // Degs, 0.1 res
     }
 
     message Temperature{

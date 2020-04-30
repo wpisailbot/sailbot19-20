@@ -166,6 +166,48 @@ def add_PWMReaderServicer_to_server(servicer, server):
   server.add_generic_rpc_handlers((generic_handler,))
 
 
+class BBBSensorReaderStub(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def __init__(self, channel):
+    """Constructor.
+
+    Args:
+      channel: A grpc.Channel.
+    """
+    self.GetSensorData = channel.unary_unary(
+        '/BBBSensorReader/GetSensorData',
+        request_serializer=MessagesServices__pb2.Server_request.SerializeToString,
+        response_deserializer=MessagesServices__pb2.BBBSersorData.FromString,
+        )
+
+
+class BBBSensorReaderServicer(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def GetSensorData(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+
+def add_BBBSensorReaderServicer_to_server(servicer, server):
+  rpc_method_handlers = {
+      'GetSensorData': grpc.unary_unary_rpc_method_handler(
+          servicer.GetSensorData,
+          request_deserializer=MessagesServices__pb2.Server_request.FromString,
+          response_serializer=MessagesServices__pb2.BBBSersorData.SerializeToString,
+      ),
+  }
+  generic_handler = grpc.method_handlers_generic_handler(
+      'BBBSensorReader', rpc_method_handlers)
+  server.add_generic_rpc_handlers((generic_handler,))
+
+
 class TrimTabGetterStub(object):
   # missing associated documentation comment in .proto file
   pass

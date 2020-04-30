@@ -11,8 +11,8 @@ The following have been addressed and tested at least to some extent:
 - [ ] Comms stability and recovery
 ## Arduino
 - [X] Reading PWM - Arduino
-- [ ] Outputting PWM - Rudder
-- [ ] Outputting PWM - Ballast
+- [X] Outputting PWM - Rudder
+- [X] Outputting PWM - Ballast
 - [X] Comms with BBB
 - [ ] Comms stability and recovery
 
@@ -29,7 +29,7 @@ Also check that you have the following installed:
 
 `$SRC_DIR` is the source of the .proto files and `$DST_DIR` is where the generated language-specific files should go. `$NANOPB_PATH` is the path to the protoc program packaged with Nanopb, and `$PROTOC_PATH` is where the protoc application packaged with Protobuf is located.
 
-Note that the protobuf files must be generated twice - once for the BBB and once for the Arduino-based boards.
+If running these commands by hand, note that the protobuf files must be generated twice - once for the BBB and once for the Arduino-based boards. The gRPC files must only be generated for BBB.
 
 ### Protobuf files for BBB
 Linux:

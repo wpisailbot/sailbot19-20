@@ -1,4 +1,5 @@
 import socket
+import sys
 import grpc
 from concurrent import futures
 import Constants as CONST
@@ -9,12 +10,14 @@ from gRPC import TrimTabMessages_pb2_grpc as tt_grpc
 
 
 
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-# s.bind((CONST.OWN_IP, 50000))
-# s.listen(1)
-# conn, addr = s.accept()
+s.bind((CONST.OWN_IP, CONST.TRIM_PORT))
+print("bound")
+s.listen(1)
+conn, addr = s.accept()
+print("connecting to ", addr)
 
 aw_data = None # Apparent wind from Teensy
 ca_data = None # Control angle for Teensy
@@ -48,12 +51,38 @@ serverTrim.start()
 try:
     while True:
         receivedData = tt.ApparentWind_Trim()
-        # data = conn.recv(32)
-        data = None # FOR TESTING ONLY
+
+        # data = conn.recv(5)
+        data = conn.recv(32)
+        # try:
+        #     if(conn.recv(1) == b"|" and conn.recv(1) == b"|"):
+        #         # print("Start of protobuf")
+        #         data = bytearray()
+        #         size = 0
+        #         bit1 = conn.recv(1)
+
+        #         while True:
+        #             bit2 = conn.recv(1)
+
+        #             if(bit1 == b"|" and bit2 == b"|"):
+        #                 # print(repr(data))
+        #                 # print(size)
+        #                 break
+        #             else:
+        #                 # print("Another byte")
+        #                 size = size + 1
+        #                 data += bit1
+
+        #                 bit1 = bit2
+        # except Exception as e:
+        #     print(e)
+        #     data = None
+
+        # data = None # FOR TESTING ONLY
         if data:
             receivedData.ParseFromString(data) # Receiving a single float
         aw_data = receivedData.apparent_wind
-        # print("Apparent Wind: " + str(aw_data))
+        print("Apparent Wind: " + str(aw_data))
         if not aw_data:
             pass
         sendData = tt.TrimState()
@@ -61,11 +90,12 @@ try:
             # print("Trim angle: ")
             # print(ca_data)
             # print("\n")
-            sendData.control_angle = ca_data
-            sendData.state = tt.TrimState.TRIM_STATE.MANUAL
-            if sendData.control_angle:
-                # conn.sendall(sendData.SerializeToString())
-                pass
+            # sendData.control_angle = ca_data
+            # sendData.state = tt.TrimState.TRIM_STATE.MANUAL
+            if trim_state.control_angle:
+                stringified = trim_state.SerializeToString()
+                print(len(stringified))
+                conn.sendall(stringified)
         except:
             pass
 except KeyboardInterrupt:    

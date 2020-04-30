@@ -66,7 +66,11 @@ def Subsystem_state():
     responseControlAngles = PWMmsgs.ControlAngles()
     responseTrimState = tt.TrimState()
     responseApparentWind = tt.ApparentWind_Trim()
-
+    responseSensors = ms.BBBSersorData()
+    
+    with grpc.insecure_channel('localhost:50053') as channel:
+        stubPWM = ms_grpc.BBBSensorReaderStub(channel)
+        responseSensors = stubPWM.GetSensorData(ms.Server_request(req=True))
     with grpc.insecure_channel('localhost:50052') as channel:
         stubPWM = ms_grpc.PWMReaderStub(channel)
         responsePWM = stubPWM.GetPWMValues(ms.Server_request(req=True))
