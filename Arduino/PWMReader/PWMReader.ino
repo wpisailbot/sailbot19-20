@@ -1,9 +1,9 @@
 /**
  * @file PWMReader.ino
  * @author Irina Lavryonova (ilavryonova@wpi.edu)
- * @brief Code running on the Arduino Mega located in the Hull of the boat reading PWM values
- * @version 0.1
- * @date 2019-11-11
+ * @brief Code running on the Arduino Mega located in the Hull of the boat reading PWM values.
+ * @version 0.5
+ * @date 2020-03-10
  */
 #include <Constants.h>
 
@@ -40,10 +40,6 @@ volatile int PWM6_prev_time = 0;
  */
 void setup()
 {
-  // Set hall effect pins as input -> TODO: these should move to the HERO when it is ready
-  pinMode(hallPortPin, INPUT);
-  pinMode(hallStbdPin, INPUT);
-
   // Set PWM pins from RC receiver as inputs with pullup
   pinMode(PWM1Pin, INPUT_PULLUP);
   pinMode(PWM2Pin, INPUT_PULLUP);
@@ -53,8 +49,8 @@ void setup()
   pinMode(PWM6Pin, INPUT_PULLUP);
 
   // Start serial connection
-  Serial.begin(9600);
-  Serial1.begin(9600); // BBB communication
+  Serial.begin(9600); // Debug output
+  Serial1.begin(115200); // BBB communication - make sure baud here and in PWM_IO match!!
 
   while (!Serial) {
     ; /* wait for serial port to connect. Needed for native USB port only */
@@ -82,11 +78,8 @@ void loop()
 
 
 /**
- * @brief Updates the vessel state and publishes to the server
- * 
- * @TODO: make a browser friendly version of the variables
- * @TODO: post updates only when there are changes
- * @TODO: expect a response
+ * @brief Updates the vessel state and sends to BBB via UART
+ * This is one way communcation, so no responce is expected from the BBB.
  */
 void packAndSendMessage()
 {
@@ -99,7 +92,7 @@ void packAndSendMessage()
   tx_message.ch5 = PWM5_value;
   tx_message.ch6 = PWM6_value;
   
-  // Encode message into probuf
+  // Encode message into protobuf
   pb_ostream_t stream_tx = pb_ostream_from_buffer(tx_buffer, sizeof(tx_buffer));
   bool status = pb_encode(&stream_tx, vessel_state_fields, &tx_message);
 
@@ -109,15 +102,15 @@ void packAndSendMessage()
     return;
   }
 
-  // Successful message transfer, so reset the connecting counter
-  msg_miss_counter = 0; 
-
   // Write protobuf message to server queue
   Serial1.write(tx_buffer, stream_tx.bytes_written);
+  delay(100); // Tell BBB that we're done sending this message
 }
 
 
-
+/**
+ * This is using the interrupts to time the edges of the PWM pulses. This returns the duty cycle time and thus is not a ratio of the period.
+ */
 /******************* START PWM INTERRUPT ROUTINES ****************************/
 void rising_PWM1()
 {

@@ -1,3 +1,8 @@
+"""
+This is the webserver with the debug information. It uses templates created using TOPOL.io.
+To access the webpage published by this server, connect to the boat's wifi network and navigate to the IP of the BBB, port 5000, and subpage you want.
+"""
+
 from gRPC import MessagesServices_pb2 as ms
 from gRPC import MessagesServices_pb2_grpc as ms_grpc
 from gRPC import ArduinoMessages_pb2 as PWMmsgs

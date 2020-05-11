@@ -1,3 +1,5 @@
+"""
+"""
 import grpc
 from concurrent import futures
 import Constants as CONST
@@ -8,17 +10,21 @@ import Adafruit_BBIO.ADC as ADC
 
 
 
+# Set up GPIO reading of the hall effect sensors. Need to do this using the logic level shifter because the sensors need and output 5V, while the BBB runs on 3V!!
 # print("setting up GPIO")
 GPIO.setup(CONST.HALL_STBD_PIN, GPIO.IN)
 GPIO.setup(CONST.HALL_PORT_PIN, GPIO.IN)
 
 
 
+# Set up the ADC for reading the pot that was in the plans, but never materialized due to campus closure.
 # print("setting up ADC")
 ADC.setup()
 
 
 
+# Create a protobuf to store sensor values and fill it in with dummy values.
+# NOTE: filling protobufs with 0s seems to result in a completely empty structure that will not be properly decoded on the other side.
 sensor_msg = ms.BBBSersorData()
 sensor_msg.hall_port = False
 sensor_msg.hall_stbd = False
@@ -48,6 +54,7 @@ def readSensors(): # Call this with some regularity
 
 
 
+# gRPC class for responding to requests
 class BBBSensorReaderServicer(ms_grpc.BBBSensorReaderServicer):
     def __init__(self):
         pass
@@ -55,10 +62,10 @@ class BBBSensorReaderServicer(ms_grpc.BBBSensorReaderServicer):
         return sensor_msg
 
 
-
+# Start and attach server
 serverSensor = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
 ms_grpc.add_BBBSensorReaderServicer_to_server(BBBSensorReaderServicer(), serverSensor)
-serverSensor.add_insecure_port('localhost:50053')
+serverSensor.add_insecure_port('localhost:50053') # Make sure that the port is unique (not used by any other servers on the board)
 serverSensor.start()
 
 
@@ -66,6 +73,7 @@ serverSensor.start()
 try:
     while True:
         try:
+            # continuusly read sensor state
             readSensors()
         except Exception as e:
             print(str(e))

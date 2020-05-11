@@ -1,22 +1,27 @@
+"""
+This is a stub code and must be filled out with the serial reading (USB) and parsing code.
+The code presented in this file now shows how to fill out the protobuf and reply with it when a request comes in.
+The code currently waits for termination, but the more logical thing to do would be to continuasly read the serial data.
+Other modules will be useful examples of how to get this to a more operational state.
+"""
 import grpc
 from concurrent import futures
 import Constants as CONST
 from gRPC import MessagesServices_pb2 as ms
 from gRPC import MessagesServices_pb2_grpc as ms_grpc
-import signal
 
-def keyboardInterruptHandler(signal, frame):
-    print("KeyboardInterrupt (ID: {}) has been caught. Cleaning up...".format(signal))
-    exit(0)
-
-signal.signal(signal.SIGINT, keyboardInterruptHandler)
-
+# gRPC class - required for modularization
 class AirmarReaderServicer(ms_grpc.AirmarReaderServicer):
     def __init__(self):
         pass
+    
     def GetAirmarData(self, request, context):
+        # Replies to a request for the Airmar data
+
+        # Create protobuf data container
         AirmarData = ms.AirmarData()
 
+        # Fill out the protobuf with dummy data
         AirmarData.apparentWind.speed           = 1.0
         AirmarData.apparentWind.direction       = 2.0
         AirmarData.theoreticalWind.speed        = 3.0
@@ -42,11 +47,17 @@ class AirmarReaderServicer(ms_grpc.AirmarReaderServicer):
         AirmarData.pitchRoll.roll               = 23.0
         AirmarData.rel_hum                      = 24.0      
 
+        # Reply with filled out protobuf
         return AirmarData
 
 
+# Create gRPC server
 serverAirmar = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
+# Add the servisor to server
 ms_grpc.add_AirmarReaderServicer_to_server(AirmarReaderServicer(), serverAirmar)
+# Attach server to local port - make sure the port is unique (not used by any other servers on the system)
 serverAirmar.add_insecure_port('localhost:50051')
+# Start the server
 serverAirmar.start()
+# Wait until the file is terminated to stop the server. This is where you read the Airmar and stuff with it. 
 serverAirmar.wait_for_termination() # blocking code - comment out when want to do other stuff

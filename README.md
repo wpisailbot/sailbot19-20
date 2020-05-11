@@ -9,6 +9,7 @@ The following have been addressed and tested at least to some extent:
 - [X] Modular architecture
 - [X] Comms with Arduino
 - [ ] Comms stability and recovery
+- [ ] Reading Airmar
 ## Arduino
 - [X] Reading PWM - Arduino
 - [X] Outputting PWM - Rudder

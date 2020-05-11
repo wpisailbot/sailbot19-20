@@ -7,13 +7,13 @@ MOV_BAL_POT_PIN = "P9_27" # Hardware not implemented, code using this pin not im
 
 
 ### BOAT VARIABLES ###
-MAX_HEEL_ANGLE = 20
-RUDDER_MAX_ANGL = 180
-RUDDER_MIN_ANGL = 0
+MAX_HEEL_ANGLE = 20 # Max heel angle the boat should ever allow (bigger angle risks capsizing)
+RUDDER_MAX_ANGL = 180 # Max angle the rudder should ever move to
+RUDDER_MIN_ANGL = 0 # Min angle the rudder should ever move to
 MOV_BAL_MAX_ANGL = 180 # This is where the port mangetic switch is
 MOV_BAL_MIN_ANGL = 0 # This is where the stbd mangetic switch is
 MOV_BAL_MAX_SPEED = 15 # Max speed with which the ballast can move
-MOV_BAL_ANGL_TOL = 5
+MOV_BAL_ANGL_TOL = 5 # Tolarance of the movanble ballast angle
 
 ### WIFI VARIABLES ###
 TRIM_IP = '192.168.0.25' # Use this with the actual Trim Tab - it has a static IP
@@ -22,6 +22,6 @@ TRIM_PORT = 50000
 BUFFER_SIZE = 50
 # OWN_IP = '192.168.0.21' # This is the actual boat address
 OWN_IP = '192.168.0.14' # This is for local testing. This is whatever address you use to ssh into the board.
-# OWN_IP = '192.168.0.3'
+# OWN_IP = '192.168.0.3' # This is for local testing. This is whatever address you use to ssh into the board.
 
 OWN_PORT = 50051

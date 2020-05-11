@@ -3,36 +3,43 @@ import "TrimTabMessages.proto";
 import "ArduinoMessages.proto";
 
 service AirmarReader {
-    rpc GetAirmarData(Server_request) returns (AirmarData) {}
+    rpc GetAirmarData(Server_request) returns (AirmarData) {} // Sends Airmar data to anyone who requests it
 }
 
 service AutonomousValueReader {
-    rpc GetAutonomousValues(Readings) returns (ControlValues) {}
+    rpc GetAutonomousValues(Readings) returns (ControlValues) {} // Exchange sensor readings for motor set points
 }
 
 service PWMReader {
-    rpc GetPWMInputs(ControlAngles) returns (PWMValues) {}
-    rpc GetPWMValues(Server_request) returns (PWMValues) {}
-    rpc GetControlAngles(Server_request) returns (ControlAngles) {}
+    rpc GetPWMInputs(ControlAngles) returns (PWMValues) {} // Exchange control angles for PWM values
+    rpc GetPWMValues(Server_request) returns (PWMValues) {} // Sends PWM values to anyone who requests them
+    rpc GetControlAngles(Server_request) returns (ControlAngles) {} // Sends control angles to anyone who requests them
 }
 
 service BBBSensorReader {
-    rpc GetSensorData(Server_request) returns (BBBSersorData) {}
+    rpc GetSensorData(Server_request) returns (BBBSersorData) {} // Sends sensor data read by the BBB to anyone who requests them
 }
 
 service TrimTabGetter {
-    rpc SetTrimTabSetting(TrimState) returns (ApparentWind_Trim) {}
-    rpc GetTrimState(Server_request) returns (TrimState) {}
-    rpc GetApparentWind(Server_request) returns (ApparentWind_Trim) {}
+    rpc SetTrimTabSetting(TrimState) returns (ApparentWind_Trim) {} // Exchange trim settings for apparent wind data information
+    rpc GetTrimState(Server_request) returns (TrimState) {} // Sends trim settings to anyone who requests them
+    rpc GetApparentWind(Server_request) returns (ApparentWind_Trim) {} // Sends apparent wind data to anyone who requests it
 }
 
+/**
+* Data read by the BBB of the sensors it is connected to 
+*/
 message BBBSersorData {
-    bool hall_port = 1;
-    bool hall_stbd = 2;
-    float pot_val = 3;
-    bool pot_centered = 4;
+    bool hall_port = 1; // Port hall effect sensor reading
+    bool hall_stbd = 2; // Starboard hall effect sensor reading
+    float pot_val = 3; // Value of the movable ballast pot
+    bool pot_centered = 4; // True if the movable ballast pot is centered
 }
 
+/**
+* Airmar data read using the BBB
+* The variables are as defined on the product page of the device
+*/
 message AirmarData {
     message ApparentWind_Airmar{
         float speed = 1; // Knots, 0.1 res
@@ -95,15 +102,18 @@ message AirmarData {
 }
 
 message ControlValues {
-    float rudderAngle = 1;
-    float trimAngle = 2;
-    float ballastAngle = 3;
+    float rudderAngle = 1; // Desired angle of the rudder
+    float trimAngle = 2; // Desired angle of the trim tab
+    float ballastAngle = 3; // Desired angle of the movable ballast
 }
 
 message Readings{
-    float apparentWind = 1;
+    float apparentWind = 1; // Read apparent wind sensor
 }
 
+/**
+* Dummy message structure simply denoting a request of the infomation the rpc serves
+*/
 message Server_request{
     bool req = 1;
 }

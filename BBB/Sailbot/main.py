@@ -1,3 +1,11 @@
+"""
+This code was not finished, but the idea was to have a central place for all of the modules to be launched from.
+This is done by the startup.sh script right now, so it's really dependent on which method makes the most sense
+given the direction that the code goes into in the future.
+
+The modules communcation with each other using gRPC, so it's actually probably not necessary that the data pass through
+this file unless it is control information for autonomous operation.
+"""
 from concurrent import futures
 import grpc
 import Constants as CONST
