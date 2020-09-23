@@ -11,7 +11,7 @@
 
 // Protobuf variables
 uint8_t rx_buffer[32];
-char tx_buffer[32];
+unsigned char tx_buffer[32];
 
 // Wifi variables
 SoftwareSerial ESPSerial(RX2pin, TX2pin); // RX2, TX2
@@ -33,13 +33,13 @@ IntervalTimer servoTimer;
 volatile int missed_msgs = 0;
 Servo servo;
 volatile float windAngle; // Mapped reading from wind direction sensor on the front of the sail
-volatile uint32_t control_angle;
+volatile int32_t control_angle;
 bool readingNow = false;
 
 int timeSinceLastComm = 0;
 int timeout = 1000;
 
-TrimAngle_TRIM_STATE state = TrimAngle_TRIM_STATE_MIN_LIFT;
+TrimState_TRIM_STATE state = TrimState_TRIM_STATE_MIN_LIFT;
 
 void setup()
 {
@@ -52,7 +52,7 @@ void setup()
   ESPSerial.begin(115200);
   // initialize ESP module
   WiFi.init(&ESPSerial);
-  establishConnection();
+  //establishConnection();
 
   pinMode(vInPin, INPUT);
   pinMode(led1Pin, OUTPUT);
@@ -102,11 +102,11 @@ void readProtobuf()
     }
   
     // Prepare a struct to save the message to
-    TrimAngle controlAngle = TrimAngle_init_zero;
+    TrimState controlAngle = TrimState_init_zero;
   
     // Decode the message and save to a struct
     pb_istream_t stream_rx = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
-    bool status_rx = pb_decode(&stream_rx, TrimAngle_fields, &controlAngle);
+    bool status_rx = pb_decode(&stream_rx, TrimState_fields, &controlAngle);
   
     // Couldn't decode the message, so want to reconnect
     if (!status_rx)
@@ -130,7 +130,7 @@ void readProtobuf()
 void writeProtobuf()
 {
   // Prep the message
-  ApparentWind apparentWind = ApparentWind_init_zero;
+  ApparentWind_Trim apparentWind = ApparentWind_Trim_init_zero;
   size_t message_length;
 
   // Create a stream that will write to the buffer
@@ -144,7 +144,7 @@ void writeProtobuf()
 //  Serial.println(windAngle);
   
   // Encode the message
-  bool status_tx = pb_encode(&stream_tx, ApparentWind_fields, &apparentWind);
+  bool status_tx = pb_encode(&stream_tx, ApparentWind_Trim_fields, &apparentWind);
   message_length = stream_tx.bytes_written;
 
   /* Then just check for any errors.. */
@@ -224,7 +224,7 @@ void servoControl()
   //  servo.write(SERVO_CTR + control_angle - 200 - 90);
 
   switch(state){
-    case TrimAngle_TRIM_STATE_MAX_LIFT_PORT:
+    case TrimState_TRIM_STATE_MAX_LIFT_PORT:
       //if the lift angle isnt enough and the heel angle isnt too much the angle of attack is increased
       if ((MAX_LIFT_ANGLE > windAngle+1)) {  //&& (abs(heelAngle) <= maxHeelAngle))) {
         if (control_angle >= 55) { }
@@ -242,7 +242,7 @@ void servoControl()
       }
       servo.write(SERVO_CTR + control_angle - 200 - 90);
       break;
-    case TrimAngle_TRIM_STATE_MAX_LIFT_STBD:
+    case TrimState_TRIM_STATE_MAX_LIFT_STBD:
       windAngle*=-1;
       //if the lift angle isnt enough and the heel angle isnt too much the angle of attack is increased
       if ((MAX_LIFT_ANGLE > windAngle+1)) {  //&& (abs(heelAngle) <= maxHeelAngle))) {
@@ -261,16 +261,16 @@ void servoControl()
       }
       servo.write(SERVO_CTR + control_angle - 200 - 90);
       break;
-    case TrimAngle_TRIM_STATE_MAX_DRAG_PORT:
+    case TrimState_TRIM_STATE_MAX_DRAG_PORT:
       servo.write(SERVO_CTR - 55);
       break;
-    case TrimAngle_TRIM_STATE_MAX_DRAG_STBD:
+    case TrimState_TRIM_STATE_MAX_DRAG_STBD:
       servo.write(SERVO_CTR + 55);
       break;
-    case TrimAngle_TRIM_STATE_MIN_LIFT:
+    case TrimState_TRIM_STATE_MIN_LIFT:
       servo.write(SERVO_CTR);
       break;
-    case TrimAngle_TRIM_STATE_MANUAL:
+    case TrimState_TRIM_STATE_MANUAL:
       servo.write(control_angle);
       break;
     default:
@@ -297,27 +297,27 @@ void blinkState()
   }
 
   switch(state){
-    case TrimAngle_TRIM_STATE_MAX_LIFT_PORT:
+    case TrimState_TRIM_STATE_MAX_LIFT_PORT:
       digitalWrite(led1Pin, HIGH);
       digitalWrite(led2Pin, LOW);
       break;
-    case TrimAngle_TRIM_STATE_MAX_LIFT_STBD:
+    case TrimState_TRIM_STATE_MAX_LIFT_STBD:
       digitalWrite(led1Pin, ledState);
       digitalWrite(led2Pin, LOW);
       break;
-    case TrimAngle_TRIM_STATE_MAX_DRAG_PORT:
+    case TrimState_TRIM_STATE_MAX_DRAG_PORT:
       digitalWrite(led1Pin, LOW);
       digitalWrite(led2Pin, HIGH);
       break;
-    case TrimAngle_TRIM_STATE_MAX_DRAG_STBD:
+    case TrimState_TRIM_STATE_MAX_DRAG_STBD:
       digitalWrite(led1Pin, LOW);
       digitalWrite(led2Pin, ledState);
       break;
-    case TrimAngle_TRIM_STATE_MIN_LIFT:
+    case TrimState_TRIM_STATE_MIN_LIFT:
       digitalWrite(led1Pin, LOW);
       digitalWrite(led2Pin, LOW);
       break;
-    case TrimAngle_TRIM_STATE_MANUAL:
+    case TrimState_TRIM_STATE_MANUAL:
       digitalWrite(led1Pin, HIGH);
       digitalWrite(led2Pin, HIGH);
       break;
