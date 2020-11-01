@@ -1,2 +1,2 @@
-
+basic_pkg
 -DCATKIN_DEVEL_PREFIX=/home/nerniply/sailbot20-21/sailbot_ws/devel -DCMAKE_INSTALL_PREFIX=/home/nerniply/sailbot20-21/sailbot_ws/install -G Unix Makefiles
