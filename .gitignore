@@ -1,18 +1,3 @@
-# Created by https://www.gitignore.io/api/code,platformio
-# Edit at https://www.gitignore.io/?templates=code,platformio
 
-### Code ###
-.vscode/*
-.vscode
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-### PlatformIO ###
-.pioenvs
-.piolibdeps
-.clang_complete
-.gcc-flags.json
-
-# End of https://www.gitignore.io/api/code,platformio
+#Emacs temp saves
+*~
