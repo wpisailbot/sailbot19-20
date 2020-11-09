@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io(); // socket initialization
 
 let mockData = {apparentWind: {speed: 69, direction: 60},
 				theoreticalWind: {speed: 25, direction: 250},
@@ -11,8 +11,9 @@ let mockData = {apparentWind: {speed: 69, direction: 60},
 				pitchroll: {pitch: 10, roll: 30},
 				gyro: {phi: 9821, theta: 0.2910, psi: 9001}};
 
-socket.emit('data', mockData);
+socket.emit('data', mockData); // sending to the server under the data socket
 
+// sends data every 500ms
 setInterval(() => socket.emit('data', {
 	apparentWind: {speed: 10 + Math.floor(Math.random() * 50), direction: Math.floor(Math.random() * 295)},
 	theoreticalWind: {speed: 10 + Math.floor(Math.random() * 50), direction: Math.floor(Math.random() * 295)},

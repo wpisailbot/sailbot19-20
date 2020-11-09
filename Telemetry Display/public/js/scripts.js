@@ -7,8 +7,9 @@ let appwind, theowind, compass, airtemp, windchill, pressure, gps, pitchroll, gr
 const socketInit = () => {
 	socket.emit('client');
 
+    // Creates callback for when data is recieved from the server (updates all the page components)
 	socket.on('updateDash', (data) => {
-	console.log(data);
+	// console.log(data);
 	/********** Apparent Wind **********/
 		let speed = (data.apparentWind.speed ? data.apparentWind.speed : 60)* 0.5
 		let direction = (data.apparentWind.direction ? data.apparentWind.direction : 0);
@@ -49,6 +50,7 @@ const socketInit = () => {
 	    	.attr('x2', (30 + x/2).toString())
 	    	.attr('y2', (30 - y/2).toString());
 
+        // More Animation code
 	  	// d3.select('#theoreticalWindLine')
 		  // 	.append('animateTransform')
 		  // 	.attr('id', 'theoreticalWindAnimator')
@@ -107,14 +109,15 @@ const socketInit = () => {
 };
 
 
-// uses dependecy to draw all of the gauges
+// uses dependecy (d3gauge.js) to draw all of the gauges
 const gaugeInit = () => {
+    // default options
 	const options = {gaugeRadius: 65,
 					edgeWidth: .025, 
 					tickLengthMin: 0, 
 					needleLengthNeg: -0.25, 
 					pivotRadius: 0,
-					tickEdgeGap: 0,
+					tickEdgeGap: -.1,
 					tickFont: "'Lato', sans-serif", 
 					unitsFont: "'Lato', sans-serif",
 					labelFontSize: 22, 
@@ -154,6 +157,7 @@ const gaugeInit = () => {
 };
 
 
+// Create the svg using d3 and inserts it into the given div
 const displayCompass = (div) => {
 	d3.select('#' + div)
 		.append('svg')
@@ -179,7 +183,7 @@ const displayCompass = (div) => {
     	.attr('transform', 'translate(17, 16) scale(0.30)');
 }
 
-
+// creates a vector component a nd places into the given div using d3
 const displayVector = (div) => {
 	d3.select('#' + div)
 		.append('svg')
@@ -223,6 +227,7 @@ const displayVector = (div) => {
 };
 
 
+// creates the pitchroll svg component using d3 and inserts into the div
 const displayPitchRoll = (div) => {
 	d3.select('#' + div)
 		.append('svg')
@@ -244,6 +249,7 @@ const displayPitchRoll = (div) => {
         .attr('r', 64)
         .style('fill', 'white')
         .style('stroke', 'black');
+    // Inner Circle
     borders.append('circle')
         .attr('cx', 65)
         .attr('cy', 65)
@@ -251,6 +257,7 @@ const displayPitchRoll = (div) => {
         .style('fill', 'white')
         .style('stroke', 'black');
 
+    // Horizontal Ticks
     let horizonTicks = svg.append('g')
     	.attr('id', 'horizonTicks');
 
@@ -293,6 +300,7 @@ const displayPitchRoll = (div) => {
     	.attr('stroke', 'black')
     	.attr('stroke-width', 1);
 
+    // Roll ticks around the edges (corrected to the angle)
     let rollTicks = svg.append('g')
     	.attr('id', 'rollTicks');
     let largeTickLen = 19, smallTickLen = 10, innerRad = 45, center = 65;
@@ -411,6 +419,7 @@ const displayPitchRoll = (div) => {
 
     // });
 
+    // Top triangle thing in the roll part
     let centerRoll = svg.append('g')
     	.attr('id', 'centerRoll');
 
@@ -422,6 +431,7 @@ const displayPitchRoll = (div) => {
     let movingParts = svg.append('g')
     	.attr('id', 'movingParts');
 
+    // purple roll indicator (smaller triangle)
     movingParts.append('polygon')
     	.attr('id', 'rollIndicator')
     	.attr('points', '65,20 70,30 60,30')
@@ -430,6 +440,7 @@ const displayPitchRoll = (div) => {
     let pitchIndicator = movingParts.append('g')
     	.attr('id', 'pitchIndicator');
 
+    // path and circle code for the pitch indicator thingy
     pitchIndicator.append('path')
     	.attr('d', 'm30,72 h15 a1,1 0 0,0 39,0 h15')
     	.attr('fill', 'none')
@@ -452,5 +463,6 @@ window.onload = () => {
 	displayVector('theoreticalWindVector');
 	displayCompass('compassImage');
 	displayPitchRoll('pitchrollDisp');
+    
 	gaugeInit();
 };

@@ -36,6 +36,10 @@ h6 {
 	top: 27px;
 }
 
+.compass {
+	margin-top: 0px;
+}
+
 /* Text Modules */
 .labels {
 	float: left;
