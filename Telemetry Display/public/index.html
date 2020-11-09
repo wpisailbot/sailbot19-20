@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Sailbot Dashboard</title>
+  <meta name="description" content="Recieves and Displays data from WPI Sailbot">
+  <meta name="author" content="Sailbot Team 20-21">
+
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/simple-grid.min.css">
+</head>
+
+<body>
+  <script src="/js/dependencies/socket.io.min.js"></script>
+  <script type="text/javascript" src="/js/dependencies/d3.min.js" charset="utf-8"></script>
+  <script type="text/javascript" src="/js/dependencies/d3gauge.js" charset="utf-8"></script>
+  <script src="js/scripts.js"></script>
+  <div class="container center">
+      <div class="row">
+          <h1>Sailbot Data</h1>
+      </div>
+  	  <div class="row">
+        <div class="col-1"></div>
+        
+        <div id="apparentWind" class="col-3">
+          <div class="degree">
+          	<h6 id="apparentWindAngle" class="font-light">60</h6>
+          	<h6 class="font-light">°</h6>
+          </div>
+          <div class="magnitude">
+          	<h6 id="apparentWindMag" class="font-light">69</h6>
+          	<h6 class="font-light">knots</h6>
+          </div>
+          <div id="apparentWindVector" class="vector"></div>
+          <h6 id="apparentWindTitle" class="bot-text font-heavy">Apparent Wind</h6>
+        </div>
+
+        <div id="theoreticalWind" class="col-3">
+          <div class="degree">
+          	<h6 id="theoreticalWindAngle" class="font-light">113</h6>
+          	<h6 class="font-light">°</h6>
+          </div>
+          <div class="magnitude">
+          	<h6 id="theoreticalWindMag" class="font-light">34</h6>
+          	<h6 class="font-light">knots</h6>
+          </div>
+          <div id="theoreticalWindVector" class="vector"></div>
+          <h6 id="theoreticalWindTitle" class="bot-text font-heavy">Theoretical Wind</h6>
+        </div>
+
+        <div id="compass" class="col-3">
+          <div class="north">
+  		  	<h6 id="compassNorth" class="font-light">N</h6>
+          </div>
+          <div id="compassImage"></div>
+          <h6 id="compassTitle" class="font-heavy">Compass</h6>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-1"></div>
+        
+        <div id="airtemp" class="col-3">
+          <div id="airtempDisp"></div>
+          <h6 id="airtempTitle" class="font-heavy">Air Temperature</h6>
+        </div>
+
+        <div id="windchill" class="col-3">
+          <div id="windchillDisp"></div>
+          <h6 id="windchillTitle" class="font-heavy">Wind Chill</h6>
+        </div>
+
+        <div id="pressure" class="col-3">
+          <div id="pressureDisp"></div>
+          <h6 id="pressureTitle" class="font-heavy">Barometric Pressure</h6>
+        </div>        
+      </div>
+
+      <div class="row">
+        <div class="col-2"></div>
+
+        <div id="pitchroll" class="col-3">
+          <div id="pitchrollDisp"></div>
+          <h6 id="pitchrollTitle" class="font-heavy">Pitch and Roll</h6>
+        </div>
+
+        <div class="col-1"></div>
+
+        <div id="speed" class="col-3">
+          <div id="speedDisp"></div>
+          <h6 id="speedTitle" class="font-heavy">Ground Speed</h6>
+        </div>
+      </div>
+
+      <div class="row">
+    	<div class="col-2"></div>
+
+        <div id="gps" class="col-2">
+          <div id="gpsDisp" class="module center">
+          	<div class="labels">
+          	  <text>Lat:</text>
+          	  <text>Long:</text>
+          	  <text>Alt:</text>
+          	</div>
+          	<div class="values">
+          	  <text id="latitude">42.27262</text>
+          	  <text id="longitude">-71.81295</text>
+          	  <text id="altitude">20</text>
+          	</div>
+          </div>
+          <h6 id="gpsTitle" class="font-heavy">GPS</h6>
+        </div>
+
+    	<div class="col-1"></div>
+        
+        <div id="gyro" class="col-2">
+          <div id="gyroDisp" class="module center">
+          	<div class="labels">
+          	  <text>Phi:</text>
+          	  <text>Theta:</text>
+          	  <text>Psi:</text>
+          	</div>
+          	<div class="values">
+          	  <text id="phi">420.69</text>
+          	  <text id="theta">420</text>
+          	  <text id="psi">-420.69</text>
+          	</div>
+          </div>
+          <h6 id="gyroTitle" class="font-heavy">Rate Gyro</h6>
+        </div>
+
+        <div class="col-1"></div>
+
+        <div id="humidity" class="col-2">
+    	  <div>
+      	    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 350" height="135px">
+		      <image href="../assets/water-drop.svg" transform="translate(-41, 20) scale(2)"/>
+		    	<text id="humidityVal" class="font-light" x="31%" y="55%" dominant-baseline="middle" textLength="40%" text-anchor="middle" style="font-size: 4rem;">65%</text>
+		    </svg>
+          	<h6 id="humidityTitle" class="font-heavy">Rel Humidity</h6>
+      	  </div>
+        </div>
+      </div>
+  </div>
+</body>
+</html>
