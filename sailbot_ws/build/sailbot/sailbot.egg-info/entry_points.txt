@@ -1,4 +1,0 @@
-[console_scripts]
-control_system = sailbot.control_system:main
-pin_io = sailbot.pin_io:main
-
