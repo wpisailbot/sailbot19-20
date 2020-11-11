@@ -9,61 +9,65 @@ const socketInit = () => {
 
     // Creates callback for when data is recieved from the server (updates all the page components)
 	socket.on('updateDash', (data) => {
-	// console.log(data);
+	console.log(data);
 	/********** Apparent Wind **********/
-		let speed = (data.apparentWind.speed ? data.apparentWind.speed : 60)* 0.5
-		let direction = (data.apparentWind.direction ? data.apparentWind.direction : 0);
-		let x = speed * Math.cos(direction * (Math.PI / 180));
-		let y = speed * Math.sin(direction * (Math.PI / 180));
 
-		document.querySelector('#apparentWindMag').innerHTML = speed * 2;
-		document.querySelector('#apparentWindAngle').innerHTML = direction;
-
+		let appSpeed = (data.apparentWind.speed ? data.apparentWind.speed : 60);
+		let appDirection = (data.apparentWind.direction ? data.apparentWind.direction : 0);
+        let appOldAngle = document.querySelector('#apparentWindVectorLine').transform.baseVal[0].angle;
+		let appX = appSpeed * Math.cos(0 * (Math.PI / 180));
+		let appY = appSpeed * Math.sin(0 * (Math.PI / 180));
+        
+        // sets the correct Length of the Vector at the 0 angle
 	  	d3.select('#apparentWindVectorLine')
-	    	.attr('x1', (30 - x/2).toString())
-	    	.attr('y1', (30 + y/2).toString())
-	    	.attr('x2', (30 + x/2).toString())
-	    	.attr('y2', (30 - y/2).toString());
+	    	.attr('x1', (30 - appX/2).toString())
+	    	.attr('y1', (30 - appY/2).toString())
+	    	.attr('x2', (30 + appX/2).toString())
+	    	.attr('y2', (30 + appY/2).toString());
 
-	    // Animation code, maybe get that working eventually
-	  	// d3.select('#apparentWindVectorLine')
-		  // 	.append('animateTransform')
-		  // 	.attr('id', 'apparentWindAnimator')
-		  // 	.attr('attributeName', 'transform')
-		  // 	.attr('type', 'rotate')
-		  // 	.attr('from', document.querySelector('#apparentWindVectorLine').transform.baseVal[0].angle + ', 30, 30')
-		  // 	.attr('to', direction + ', 30, 30')
-		  // 	.attr('dur', '1.5s');
+	    // Sets the trnsition from the vector's oldAngle to the new angle
+	  	d3.select('#apparentWindVectorLine')
+            .transition()
+            .duration(1000)
+            .ease(d3.easeElasticOut, 1, 0.9)
+            .attrTween("transform", () => d3.interpolateString('rotate('+ appOldAngle +', 30, 30)', 'rotate('+ -appDirection +', 30, 30)'));
+
+		document.querySelector('#apparentWindAngle').innerHTML = appDirection;
+		document.querySelector('#apparentWindMag').innerHTML = appSpeed;
 
 	/********** Theoretical Wind **********/
-		speed = (data.apparentWind.speed ? data.apparentWind.speed : 60)* 0.5
-		direction = (data.apparentWind.direction ? data.apparentWind.direction : 0);
-		x = speed * Math.cos(direction * (Math.PI / 180));
-		y = speed * Math.sin(direction * (Math.PI / 180));
 
-		document.querySelector('#theoreticalWindMag').innerHTML = speed * 2;
-		document.querySelector('#theoreticalWindAngle').innerHTML = direction;
+        let theoSpeed = (data.theoreticalWind.speed ? data.theoreticalWind.speed : 60);
+        let theoDirection = (data.theoreticalWind.direction ? data.theoreticalWind.direction : 0);
+        let theoOldAngle = document.querySelector('#theoreticalWindVectorLine').transform.baseVal[0].angle;
+        let theoX = theoSpeed * Math.cos(0 * (Math.PI / 180));
+        let theoY = theoSpeed * Math.sin(0 * (Math.PI / 180));
+        
+        // sets the correct Length of the Vector at the 0 angle
+        d3.select('#theoreticalWindVectorLine')
+            .attr('x1', (30 - theoX/2).toString())
+            .attr('y1', (30 - theoY/2).toString())
+            .attr('x2', (30 + theoX/2).toString())
+            .attr('y2', (30 + theoY/2).toString());
 
-	  	d3.select('#theoreticalWindVectorLine')
-	    	.attr('x1', (30 - x/2).toString())
-	    	.attr('y1', (30 + y/2).toString())
-	    	.attr('x2', (30 + x/2).toString())
-	    	.attr('y2', (30 - y/2).toString());
+        // Sets the trnsition from the vector's oldAngle to the new angle
+        d3.select('#theoreticalWindVectorLine')
+            .transition()
+            .duration(1000)
+            .ease(d3.easeElasticOut, 1, 0.9)
+            .attrTween("transform", () => d3.interpolateString('rotate('+ theoOldAngle +', 30, 30)', 'rotate('+ -theoDirection +', 30, 30)'));
 
-        // More Animation code
-	  	// d3.select('#theoreticalWindLine')
-		  // 	.append('animateTransform')
-		  // 	.attr('id', 'theoreticalWindAnimator')
-		  // 	.attr('attributeName', 'transform')
-		  // 	.attr('type', 'rotate')
-		  // 	.attr('from', sdocument.querySelector('#theoreticalWinddLine').transform.baseVal[0].angle + ', 30, 30')
-		  // 	.attr('to', direction + ', 30, 30')
-		  // 	.attr('dur', '1.5s');
+        document.querySelector('#theoreticalWindAngle').innerHTML = theoDirection;
+        document.querySelector('#theoreticalWindMag').innerHTML = theoSpeed;
 
 	/********** Compass **********/ 
 
+		// .attr('transform', 'rotate(' + Math.atan2(data.compass.y, data.compass.x) * (180/Math.PI) + ', 50, 50) translate(17, 16) scale(0.30)');
 	d3.select('#compassBoat')
-		.attr('transform', 'rotate(' + Math.atan2(data.compass.y, data.compass.x) * (180/Math.PI) + ', 50, 50) translate(17, 16) scale(0.30)');
+            .transition()
+            .duration(1000)
+            .ease(d3.easeElasticOut, 1, 0.9)
+            .attrTween("transform", () => d3.interpolateString('rotate('+ document.querySelector('#compassBoat').transform.baseVal[0].angle +', 50, 50) translate(17, 16) scale(0.30)', 'rotate('+ -Math.atan2(data.compass.y, data.compass.x) * (180/Math.PI) +', 50, 50) translate(17, 16) scale(0.30)'));
 
 	/*** Air Temp **********/
 
@@ -84,12 +88,22 @@ const socketInit = () => {
 	document.querySelector('#altitude').innerHTML = data.gps.altitude ? data.gps.altitude : 0;
 
 	/********** Pitch and Roll **********/
-	console.log(data.pitchroll);
+
+		// .attr('transform', 'rotate('+ (data.pitchroll.roll ? data.pitchroll.roll : 30) +' 65, 65)');
+    // d3.select('#compassBoat')
 	d3.select('#rollIndicator')
-		.attr('transform', 'rotate('+ (data.pitchroll.roll ? data.pitchroll.roll : 30) +' 65, 65)');
-	
-	d3.select('#pitchIndicator')
-		.attr('transform', 'translate(0, '+ (data.pitchroll.pitch ? data.pitchroll.pitch : 0) +')');
+        .transition()
+        .duration(1000)
+        .ease(d3.easeElasticOut, 1, 0.9)
+        .attrTween("transform", () => d3.interpolateString('rotate('+ document.querySelector('#rollIndicator').transform.baseVal[0].angle +', 65, 65)', 'rotate('+ (data.pitchroll.roll ? data.pitchroll.roll : 30) +' 65, 65)')); 
+    d3.select('#pitchIndicator')
+        .transition()
+        .duration(1000)
+        .ease(d3.easeElasticOut, 1, 0.9)
+        .attrTween("transform", () => d3.interpolateString('translate(0, '+ (document.querySelector('#pitchIndicator').transform.baseVal[0].matrix.f) +')', 'translate(0, '+ (data.pitchroll.pitch ? data.pitchroll.pitch : 0) +')'));
+    console.log(document.querySelector('#pitchCircle').cy.baseVal.value - 65, data.pitchroll.pitch);
+	// d3.select('#pitchIndicator')
+	// 	.attr('transform', 'translate(0, '+ (data.pitchroll.pitch ? data.pitchroll.pitch : 0) +')');
 
 	/********** Ground Speed **********/
 
@@ -98,6 +112,9 @@ const socketInit = () => {
 	/********** Rate Gyro **********/
 
 	document.querySelector('#phi').innerHTML = data.gyro.phi ? data.gyro.phi : 0;
+    // d3.select('#phi')
+        // .transition()
+        // .textTween(() => t => data.groundspeed.toFixed(6));
 	document.querySelector('#theta').innerHTML = data.gyro.theta ? data.gyro.theta : 0;
 	document.querySelector('#psi').innerHTML = data.gyro.psi ? data.gyro.psi : 0;
 
@@ -435,10 +452,12 @@ const displayPitchRoll = (div) => {
     movingParts.append('polygon')
     	.attr('id', 'rollIndicator')
     	.attr('points', '65,20 70,30 60,30')
-    	.attr('style', 'fill:DarkOrchid;');
+    	.attr('style', 'fill:DarkOrchid;')
+        .attr('transform', 'translate(0, 0)');
 
     let pitchIndicator = movingParts.append('g')
-    	.attr('id', 'pitchIndicator');
+    	.attr('id', 'pitchIndicator')
+        .attr('transform', 'translate(0, 0)');
 
     // path and circle code for the pitch indicator thingy
     pitchIndicator.append('path')
@@ -446,6 +465,7 @@ const displayPitchRoll = (div) => {
     	.attr('fill', 'none')
     	.attr('stroke', 'black');
     pitchIndicator.append('circle')
+        .attr('id', 'pitchCircle')
     	.attr('cx', 65)
     	.attr('cy', 74)
     	.attr('r', 2)

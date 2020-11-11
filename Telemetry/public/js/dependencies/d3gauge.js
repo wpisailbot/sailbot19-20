@@ -390,8 +390,8 @@ function drawGauge(opt) {
                 if (needleAngleNew + opt.zeroNeedleAngle > opt.maxTickAngle){needleAngleNew = opt.maxNeedleAngle - opt.zeroNeedleAngle}
                 if (needleAngleNew + opt.zeroNeedleAngle < opt.zeroTickAngle){needleAngleNew = 0}
                 var needleCentre = originX+","+originY
+            
                 return d3.interpolateString("rotate(" + needleAngleOld + "," + needleCentre + ")", "rotate(" + needleAngleNew + "," + needleCentre + ")")
-
             });
         
         unitsLabel.transition()
