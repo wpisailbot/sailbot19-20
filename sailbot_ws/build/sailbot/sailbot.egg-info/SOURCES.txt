@@ -8,6 +8,7 @@ setup.py
 ../../build/sailbot/sailbot.egg-info/requires.txt
 ../../build/sailbot/sailbot.egg-info/top_level.txt
 ../../build/sailbot/sailbot.egg-info/zip-safe
+launch/all_nodes.py
 resource/sailbot
 sailbot/__init__.py
 sailbot/control_system.py
