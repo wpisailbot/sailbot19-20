@@ -24,6 +24,7 @@ setup(
         'console_scripts': [
             'pin_io = sailbot.pin_io:main',
             'control_system = sailbot.control_system:main',
+	    'teensy_comms = sailbot.teensy_comms:main',
         ],
     },
 )
