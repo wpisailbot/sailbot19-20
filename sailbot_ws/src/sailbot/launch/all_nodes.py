@@ -6,11 +6,13 @@ def generate_launch_description():
 		Node(
 			package='sailbot',
 			node_executable='pin_io',
-			name='pin_io'
+			name='pin_io',
+			output='screen'
 		),
 		Node(
 			package='sailbot',
 			node_executable='control_system',
-			name='ctrl_sys'
+			name='ctrl_sys',
+			output='screen'
 		)
 	])
