@@ -403,7 +403,7 @@ function drawGauge(opt) {
                 return function(t) {
                     unitsLabel.text(Math.round(i(t)) + " " + opt.gaugeUnits);
                 };
-        });
+            });
         
         //Update the current value
         opt.needleVal = newVal

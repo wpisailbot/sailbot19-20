@@ -1,11 +1,15 @@
 const socket = io(); 
-let appwind, theowind, compass, airtemp, windchill, pressure, gps, pitchroll, groundspeed, gyro, humidity;  
+// let appwind, theowind, compass, airtemp, windchill, pressure, gps, pitchroll, groundspeed, Gyroo, humidity;
+let map, boatPath;
 
 // inits the socket connection and joins the room for client in the server, also creates an event handler
 // 	for when data is recieved
 
 const socketInit = () => {
-	socket.emit('client');
+    const ease = d3.easeElasticOut;
+    
+	
+    socket.emit('client');
 
     // Creates callback for when data is recieved from the server (updates all the page components)
 	socket.on('updateDash', (data) => {
@@ -31,6 +35,15 @@ const socketInit = () => {
             .duration(1000)
             .ease(d3.easeElasticOut, 1, 0.9)
             .attrTween("transform", () => d3.interpolateString('rotate('+ appOldAngle +', 30, 30)', 'rotate('+ -appDirection +', 30, 30)'));
+
+        // d3.select('#apparentWindAngle')
+        //     .transition()
+        //     .duration(1000)
+        //     .ease(d3.easeElasticOut,1,0.9)
+        //     .tween("text", (d) => {
+        //         var i = d3.interpolateString(d3.select('#apparentWindAngle').text(), data.appDirection)
+        //         return (t) => Math.round(i(ts));
+        //     });
 
 		document.querySelector('#apparentWindAngle').innerHTML = appDirection;
 		document.querySelector('#apparentWindMag').innerHTML = appSpeed;
@@ -475,6 +488,85 @@ const displayPitchRoll = (div) => {
 }
 
 
+const initMap = () => {
+    const attitash = { lat: 42.8489, lng: -70.9829 };
+    // The map, centered at attitash
+    map = new google.maps.Map(document.getElementById('mapCanvas'), {
+        zoom: 16,
+        center: attitash,
+        mapTypeId: 'terrain',
+        // mapTypeId: 'satellite',
+        // tilt: 60,
+    });
+
+    const mockBoatPathCoords = [
+        { lat: 42.8489, lng: -70.9829 },
+        { lat: 42.8489, lng: -70.9839 },
+        { lat: 42.8479, lng: -70.9839 },
+        { lat: 42.8479, lng: -70.9849 },
+    ];
+
+    const boatSVG = {
+        path: "M186.771 14.593 C 69.712 144.111,10.495 260.896,1.632 379.716 C 1.113 386.673,0.815 469.496,0.813 606.694 L 0.811 822.718 200.425 822.718 L 400.039 822.718 399.782 598.580 C 399.508 360.108,399.687 371.991,395.966 345.639 C 381.460 242.897,332.445 145.393,247.094 49.493 C 237.349 38.544,200.549 0.793,199.660 0.833 C 199.401 0.844,193.601 7.036,186.771 14.593 M219.254 69.986 C 298.936 158.616,345.383 247.655,360.672 341.084 C 365.511 370.652,365.353 366.198,365.687 482.556 L 365.995 589.858 200.442 589.858 L 34.888 589.858 34.897 489.858 C 34.902 429.782,35.231 385.971,35.722 380.122 C 44.327 277.595,94.918 173.447,189.731 63.071 L 200.719 50.281 203.874 53.335 C 205.610 55.015,212.531 62.508,219.254 69.986 M365.923 706.694 L 365.923 789.452 200.406 789.452 L 34.888 789.452 34.888 706.694 L 34.888 623.935 200.406 623.935 L 365.923 623.935 365.923 706.694",
+        strokeColor: "#FFF",
+        scale: 4,
+        // rotation: 45,
+    }
+    boatPath = new google.maps.Polyline({
+        path: mockBoatPathCoords,
+        icons: [
+                {
+                    icon: {
+                        path: "M 0,-1 0,1",
+                        strokeColor: "#CC33FF",
+                        strokeOpacity: 1,
+                        scale: 4,
+                      },
+                offset: "0",
+                repeat: "20px"},
+                // {
+                //     icon: {
+                //         path: "M -2,0 0,-2 2,0 0,2 z",
+                //         strokeColor: "#F00",
+                //         fillColor: "#F00",
+                //         fillOpacity: 1,
+                //       },
+                //     offset: "0%"
+                // },
+                {
+                    icon: boatSVG,
+                    offset: "0",
+                }],
+        geodesic: true,
+        strokeOpacity: 0,
+        // strokeWeight: 2,
+        map,
+    });
+    map.addListener("click", addLatLng);
+}
+
+
+function addLatLng(event) {
+    const path = boatPath.getPath();
+    // Because path is an MVCArray, we can simply append a new coordinate
+    // and it will automatically appear.
+    path.push(event.latLng);
+    // Add a new marker at the new plotted point on the polyline.
+    new google.maps.Marker({
+        position: event.latLng,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 5,
+            strokeColor: '#000',
+            strokeWidth: 0.5,
+        },
+        title: "#" + path.getLength(),
+        map: map,
+    });
+}
+
+
+
 // calls once when page is first loaded
 window.onload = () => {
 	socketInit();
@@ -483,6 +575,18 @@ window.onload = () => {
 	displayVector('theoreticalWindVector');
 	displayCompass('compassImage');
 	displayPitchRoll('pitchrollDisp');
-    
 	gaugeInit();
+    initMap();
+    setTimeout(() => new google.maps.Marker({
+        position: { lat: 42.8499, lng: -70.9829 },
+        icon: {
+            path: 'M -2,0 a 2,2 0 1,0 4,0 a 2,2 0 1,0 -4,0',
+            scale: 3,
+            strokeColor: '#004d00',
+            fillColor: '#00e600',
+            fillOpacity: .5,
+        },
+        map,
+        title: 'second',
+    }), 500);
 };
