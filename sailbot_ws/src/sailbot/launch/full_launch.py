@@ -14,5 +14,15 @@ def generate_launch_description():
 			node_executable='control_system',
 			name='ctrl_sys',
 			output='screen'
+		),
+		Node(
+			package='sailbot',
+			node_executable='teensy_comms',
+			name='teensy'
+		),
+		Node(
+			package='sailbot',
+			node_executable='debug_interface',
+			name='debug'
 		)
 	])
