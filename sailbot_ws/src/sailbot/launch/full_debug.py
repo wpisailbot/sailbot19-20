@@ -25,6 +25,8 @@ def generate_launch_description():
 		Node(
 			package='sailbot',
 			node_executable='debug_interface',
-			name='debug'
+			name='debug',
+			output='screen',
+			prefix='gnome-terminal --command'
 		)
 	])
