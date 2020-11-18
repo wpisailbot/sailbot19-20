@@ -55,7 +55,7 @@ class DebugInterface(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    control_system = DebugInterface()
+    debug_interface = DebugInterface()
 
     while( rclpy.ok() ):
         rclpy.spin_once(debug_interface)
@@ -76,7 +76,7 @@ def main(args=None):
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    control_system.destroy_node()
+    debug_interface.destroy_node()
     rclpy.shutdown()
 
 
