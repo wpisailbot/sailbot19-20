@@ -40,15 +40,15 @@ class DebugInterface(Node):
         
 
     def serial_rc_listener_callback(self, msg):
-        self.get_logger().info('Received msg: "%s"' % msg.data)
+        self.get_logger().info('Serial msg: "%s"' % msg.data)
         self.serial_rc = msg
         
     def airmar_data_listener_callback(self, msg):
-        self.get_logger().info('Received msg: "%s"' % msg.data)
+        self.get_logger().info('Airmar data: "%s"' % msg.data)
         self.airmar_data = msg
         
     def teensy_status_listener_callback(self, msg):
-        self.get_logger().info('Received msg: "%s"' % msg.data)
+        self.get_logger().info('Teensy msg: "%s"' % msg.data)
         self.teensy_status = msg
         
 
