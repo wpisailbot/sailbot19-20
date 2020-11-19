@@ -24,6 +24,7 @@ Must set all of the correct ip address
 - Jetson: set the ip and mask to the correct ones (mask the same ip is 192.168.17.17) "sudo ifconfig eth0 192.168.17.17 netmask 255.255.255.0"
 
 To test you can just do "ping 192.168.17.{17 or 18}" from bash or unix
+To test the server, you can just curl the host ip and port so: "curl 192.168.17.18:3000"
 
 
 ## Descriptions
