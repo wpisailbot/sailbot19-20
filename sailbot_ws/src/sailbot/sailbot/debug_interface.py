@@ -1,8 +1,13 @@
 import rclpy
 from rclpy.node import Node
+import socket
+import json
+import requests
 
 from std_msgs.msg import String
 
+# Website URL #
+url = '192.168.17.18:3000'
 
 class DebugInterface(Node):
 
@@ -46,6 +51,7 @@ class DebugInterface(Node):
     def airmar_data_listener_callback(self, msg):
         self.get_logger().info('Airmar data: "%s"' % msg.data)
         self.airmar_data = msg
+        requests.post(url, json = msg.data)
         
     def teensy_status_listener_callback(self, msg):
         self.get_logger().info('Teensy msg: "%s"' % msg.data)
