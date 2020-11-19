@@ -84,21 +84,21 @@ const socketInit = () => {
 
 	/*** Air Temp **********/
 
-	airtemp.updateGauge(data.airtemp ? data.airtemp : 0);
+	// airtemp.updateGauge(data.airtemp ? data.airtemp : 0);
 
 	/*** Wind Chill **********/
 
-	windchill.updateGauge(data.windchill ? data.windchill : 0);
+	// windchill.updateGauge(data.windchill ? data.windchill : 0);
 
 	/********** Barometric Pressure **********/
 
-	pressure.updateGauge(data.pressure ? data.pressure : 950);
+	// pressure.updateGauge(data.pressure ? data.pressure : 950);
 	
 	/********** GPS **********/
 
-	document.querySelector('#latitude').innerHTML = data.gps.latitude ? data.gps.latitude : 0;
-	document.querySelector('#longitude').innerHTML = data.gps.longitude ? data.gps.longitude : 0;
-	document.querySelector('#altitude').innerHTML = data.gps.altitude ? data.gps.altitude : 0;
+	// document.querySelector('#latitude').innerHTML = data.gps.latitude ? data.gps.latitude : 0;
+	// document.querySelector('#longitude').innerHTML = data.gps.longitude ? data.gps.longitude : 0;
+	// document.querySelector('#altitude').innerHTML = data.gps.altitude ? data.gps.altitude : 0;
 
 	/********** Pitch and Roll **********/
 
@@ -125,9 +125,6 @@ const socketInit = () => {
 	/********** Rate Gyro **********/
 
 	document.querySelector('#phi').innerHTML = data.gyro.phi ? data.gyro.phi : 0;
-    // d3.select('#phi')
-        // .transition()
-        // .textTween(() => t => data.groundspeed.toFixed(6));
 	document.querySelector('#theta').innerHTML = data.gyro.theta ? data.gyro.theta : 0;
 	document.querySelector('#psi').innerHTML = data.gyro.psi ? data.gyro.psi : 0;
 
@@ -155,27 +152,36 @@ const gaugeInit = () => {
 					tickColMaj: 'black',
 					needleCol: 'red'};
 
-	airtemp = new drawGauge({divID: 'airtempDisp', 
-							minVal: 0, 
-							maxVal: 35, 
-							needleVal: 0,
-							tickSpaceMajVal: 5, 
-							gaugeUnits: 'Celcius', 
-							...options});
-	windchill = new drawGauge({divID: 'windchillDisp', 
-							minVal: 0, 
-							maxVal: 35, 
-							needleVal: 0,
-							tickSpaceMajVal: 5, 
-							gaugeUnits: 'Celcius', 
-							...options});
-	pressure = new drawGauge({divID: 'pressureDisp', 
-							minVal: 950, 
-							maxVal: 1050, 
-							needleVal: 950,
-							tickSpaceMajVal: 15, 
-							gaugeUnits: 'MiliBars', 
-							...options});
+	// airtemp = new drawGauge({divID: 'airtempDisp', 
+	// 						minVal: 0, 
+	// 						maxVal: 35, 
+	// 						needleVal: 0,
+	// 						tickSpaceMajVal: 5, 
+	// 						gaugeUnits: 'Celcius', 
+	// 						...options});
+	// windchill = new drawGauge({divID: 'windchillDisp', 
+	// 						minVal: 0, 
+	// 						maxVal: 35, 
+	// 						needleVal: 0,
+	// 						tickSpaceMajVal: 5, 
+	// 						gaugeUnits: 'Celcius', 
+	// 						...options});
+	// pressure = new drawGauge({divID: 'pressureDisp', 
+	// 						minVal: 950, 
+	// 						maxVal: 1050, 
+	// 						needleVal: 950,
+	// 						tickSpaceMajVal: 15, 
+	// 						gaugeUnits: 'MiliBars', 
+	// 						...options});
+
+    coursetrack = new drawGauge({divID: 'coursetrack', 
+                            minVal: 0, 
+                            maxVal: 360, 
+                            needleVal: 0,
+                            tickSpaceMajVal: 30, 
+                            gaugeUnits: '°', 
+                            ...options})
+
 	groundspeed = new drawGauge({divID: 'speedDisp', 
 							minVal: 0, 
 							maxVal: 25, 
@@ -258,7 +264,7 @@ const displayVector = (div) => {
 
 
 // creates the pitchroll svg component using d3 and inserts into the div
-const displayPitchRoll = (div) => {
+const displayPitchRoll = (div, radius) => {
 	d3.select('#' + div)
 		.append('svg')
 		.attr('id', 'svg-' + div)
@@ -274,16 +280,16 @@ const displayPitchRoll = (div) => {
 
     // Outer Circle
     borders.append('circle')
-        .attr('cx', 65)
-        .attr('cy', 65)
-        .attr('r', 64)
+        .attr('cx', radius)
+        .attr('cy', radius)
+        .attr('r', radius - 1)
         .style('fill', 'white')
         .style('stroke', 'black');
     // Inner Circle
     borders.append('circle')
-        .attr('cx', 65)
-        .attr('cy', 65)
-        .attr('r', 45)
+        .attr('cx', radius)
+        .attr('cy', radius)
+        .attr('r', radius * 0.7)
         .style('fill', 'white')
         .style('stroke', 'black');
 
@@ -297,43 +303,46 @@ const displayPitchRoll = (div) => {
     (PROBABLY 0 horizon OR SOMETHING FOR A BOAT)
 
     \*************************/
+    // long Horizon line
     horizonTicks.append('line')
     	.attr('id', 'horizon')
-    	.attr('x1', 5)
-    	.attr('y1', 85)
-    	.attr('x2', 125)
-    	.attr('y2', 85)
+    	.attr('x1', radius - (radius * 0.92))
+    	.attr('y1', radius * 1.3)
+    	.attr('x2', radius + (radius * 0.92))
+    	.attr('y2', radius * 1.3)
     	.attr('stroke', 'black')
     	.attr('stroke-width', 1);
+
+    // normal pitch ticks
     horizonTicks.append('line')
     	.attr('id', '5degrees')
-    	.attr('x1', 52)
-    	.attr('y1', 72)
-    	.attr('x2', 78)
-    	.attr('y2', 72)
+    	.attr('x1', radius - (radius * 0.2))
+    	.attr('y1', radius * 1.11)
+    	.attr('x2', radius + (radius * 0.2))
+    	.attr('y2', radius * 1.11)
     	.attr('stroke', 'black')
     	.attr('stroke-width', 1);
     horizonTicks.append('line')
     	.attr('id', '10degrees')
-    	.attr('x1', 52)
-    	.attr('y1', 59)
-    	.attr('x2', 78)
-    	.attr('y2', 59)
+    	.attr('x1', radius - (radius * 0.2))
+    	.attr('y1', radius * 0.91)
+    	.attr('x2', radius + (radius * 0.2))
+    	.attr('y2', radius * 0.91)
     	.attr('stroke', 'black')
     	.attr('stroke-width', 1);
     horizonTicks.append('line')
     	.attr('id', '15degrees')
-    	.attr('x1', 52)
-    	.attr('y1', 46)
-    	.attr('x2', 78)
-    	.attr('y2', 46)
+    	.attr('x1', radius - (radius * 0.2))
+    	.attr('y1', radius * 0.71)
+    	.attr('x2', radius + (radius * 0.2))
+    	.attr('y2', radius * 0.71)
     	.attr('stroke', 'black')
     	.attr('stroke-width', 1);
 
     // Roll ticks around the edges (corrected to the angle)
     let rollTicks = svg.append('g')
     	.attr('id', 'rollTicks');
-    let largeTickLen = 19, smallTickLen = 10, innerRad = 45, center = 65;
+    let largeTickLen = (radius*0.3 - 1), smallTickLen = (radius*0.3 * 0.5), innerRad = radius * 0.7, center = radius;
     let angle, sin, cos;
     // A LOT OF TRIG WENT INTO FINDING THESE X'S AND Y'S
 
@@ -454,7 +463,7 @@ const displayPitchRoll = (div) => {
     	.attr('id', 'centerRoll');
 
     centerRoll.append('polygon')
-    	.attr('points', '65,20 75,2 55,2')
+    	.attr('points', radius +','+ radius*0.3 +' '+ radius*1.15 +','+ radius*0.03 +' '+ radius*0.85 +','+ radius*0.03) //65,20 75,2 55,2 - rad 65
     	.attr('style', 'fill:DarkOrchid;');
 
 
@@ -464,7 +473,7 @@ const displayPitchRoll = (div) => {
     // purple roll indicator (smaller triangle)
     movingParts.append('polygon')
     	.attr('id', 'rollIndicator')
-    	.attr('points', '65,20 70,30 60,30')
+    	.attr('points', radius +','+ radius*0.3 +' '+ radius*1.077 +','+ radius*0.46 +' '+ radius*0.92 +','+ radius*0.46) //65,20 70,30 60,30 - rad 65
     	.attr('style', 'fill:DarkOrchid;')
         .attr('transform', 'translate(0, 0)');
 
@@ -474,17 +483,16 @@ const displayPitchRoll = (div) => {
 
     // path and circle code for the pitch indicator thingy
     pitchIndicator.append('path')
-    	.attr('d', 'm30,72 h15 a1,1 0 0,0 39,0 h15')
+    	.attr('d', 'm'+ radius*0.46 +','+ radius*1.11 +' h'+ radius*0.23 +' a1,1 0 0,0 '+ radius*0.6 +',0 h'+ radius*0.23) //m30,72 h15 a1,1 0 0,0 39,0 h15 - rad65
     	.attr('fill', 'none')
     	.attr('stroke', 'black');
     pitchIndicator.append('circle')
         .attr('id', 'pitchCircle')
-    	.attr('cx', 65)
-    	.attr('cy', 74)
+    	.attr('cx', radius)
+    	.attr('cy', radius * 1.138)
     	.attr('r', 2)
     	.attr('stroke', 'black')
     	.attr('stroke-width', 1);
-
 }
 
 
@@ -507,11 +515,13 @@ const initMap = () => {
     ];
 
     const boatSVG = {
+        anchor: new google.maps.Point(200, 0),
         path: "M186.771 14.593 C 69.712 144.111,10.495 260.896,1.632 379.716 C 1.113 386.673,0.815 469.496,0.813 606.694 L 0.811 822.718 200.425 822.718 L 400.039 822.718 399.782 598.580 C 399.508 360.108,399.687 371.991,395.966 345.639 C 381.460 242.897,332.445 145.393,247.094 49.493 C 237.349 38.544,200.549 0.793,199.660 0.833 C 199.401 0.844,193.601 7.036,186.771 14.593 M219.254 69.986 C 298.936 158.616,345.383 247.655,360.672 341.084 C 365.511 370.652,365.353 366.198,365.687 482.556 L 365.995 589.858 200.442 589.858 L 34.888 589.858 34.897 489.858 C 34.902 429.782,35.231 385.971,35.722 380.122 C 44.327 277.595,94.918 173.447,189.731 63.071 L 200.719 50.281 203.874 53.335 C 205.610 55.015,212.531 62.508,219.254 69.986 M365.923 706.694 L 365.923 789.452 200.406 789.452 L 34.888 789.452 34.888 706.694 L 34.888 623.935 200.406 623.935 L 365.923 623.935 365.923 706.694",
         strokeColor: "#FFF",
-        scale: 4,
-        // rotation: 45,
-    }
+        fillOpacity: 1,
+        scale: 0.025,
+    };
+
     boatPath = new google.maps.Polyline({
         path: mockBoatPathCoords,
         icons: [
@@ -521,50 +531,32 @@ const initMap = () => {
                         strokeColor: "#CC33FF",
                         strokeOpacity: 1,
                         scale: 4,
+                    },
+                    offset: "0",
+                    repeat: "20px"
+                },
+                {
+                    icon: {
+                        path: "M -2,0 0,-2 2,0 0,2 z",
+                        strokeColor: "#F00",
+                        fillColor: "#F00",
+                        fillOpacity: 1,
                       },
-                offset: "0",
-                repeat: "20px"},
-                // {
-                //     icon: {
-                //         path: "M -2,0 0,-2 2,0 0,2 z",
-                //         strokeColor: "#F00",
-                //         fillColor: "#F00",
-                //         fillOpacity: 1,
-                //       },
-                //     offset: "0%"
-                // },
+                    offset: "0%"
+                },
                 {
                     icon: boatSVG,
-                    offset: "0",
+                    offset: "100%",
                 }],
         geodesic: true,
         strokeOpacity: 0,
-        // strokeWeight: 2,
         map,
     });
-    map.addListener("click", addLatLng);
-}
 
-
-function addLatLng(event) {
-    const path = boatPath.getPath();
-    // Because path is an MVCArray, we can simply append a new coordinate
-    // and it will automatically appear.
-    path.push(event.latLng);
-    // Add a new marker at the new plotted point on the polyline.
-    new google.maps.Marker({
-        position: event.latLng,
-        icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 5,
-            strokeColor: '#000',
-            strokeWidth: 0.5,
-        },
-        title: "#" + path.getLength(),
-        map: map,
+    map.addListener("click", (event) => {
+        boatPath.getPath().push(event.latLng);
     });
 }
-
 
 
 // calls once when page is first loaded
@@ -574,9 +566,11 @@ window.onload = () => {
 	displayVector('apparentWindVector');
 	displayVector('theoreticalWindVector');
 	displayCompass('compassImage');
-	displayPitchRoll('pitchrollDisp');
+	displayPitchRoll('pitchrollDisp', 65);
 	gaugeInit();
     initMap();
+
+    // waypoint
     setTimeout(() => new google.maps.Marker({
         position: { lat: 42.8499, lng: -70.9829 },
         icon: {
