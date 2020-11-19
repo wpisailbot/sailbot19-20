@@ -35,7 +35,7 @@ OWN_IP = '10.0.2.15' # This is for local testing. This is whatever address you u
 
 OWN_PORT = 50051
 
-class TRIM_STATE(int, ENUM):
+class TRIM_STATE(int, Enum):
     MAX_LIFT_PORT: int = 0
     MAX_LIFT_STBD: int = 1
     MAX_DRAG_PORT: int = 2
@@ -52,7 +52,7 @@ class TeensyComms(Node):
         self.s.bind((OWN_IP,TRIM_PORT))
         print("bound")
         self.s.listen(1)
-        self.conn, self.addr = s.accept()
+        self.conn, self.addr = self.s.accept()
 
         #create publisher to teensy status topic
         self.teensy_status_publisher_ = self.create_publisher(String, 'teensy_status', 10)
@@ -73,7 +73,7 @@ class TeensyComms(Node):
             data = data.decode('utf-8')
             msg = String()
             msg.data = data
-            self.publisher_.publish(msg)
+            self.teensy_status_publisher_.publish(msg)
             self.get_logger().info('Publishing: "%s"' % msg.data)
 
     def listener_callback(self, msg):
