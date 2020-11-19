@@ -27,7 +27,9 @@ def generate_launch_description():
 		Node(
 			package='sailbot',
 			node_executable='teensy_comms',
-			name='teensy'
+			name='teensy',
+			prefix='gnome-terminal --command',
+			output='screen'
 		),
 		Node(
 			package='sailbot',
