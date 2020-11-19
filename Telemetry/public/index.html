@@ -19,18 +19,18 @@
   <script type="text/javascript" src="/js/dependencies/d3.min.js" charset="utf-8"></script>
   <script type="text/javascript" src="/js/dependencies/d3gauge.js" charset="utf-8"></script>
   <script src="js/scripts.js"></script>
-      <div style="z-index: -1; position: fixed; left: 5vw; top: 2vh;">
-        <div id="mapCanvas" class="col-11" style="height: 90vh; width: 90vw; position: relative; overflow: hidden;"></div>
-        <div class="col-2"></div>
+      <div id="map-container">
+        <div id="mapCanvas"></div>
+        <div></div>
       </div>
   <div class="container center">
 <!--       <div class="row">
-          <h1 class="col-11">Sailbot Data</h1>
+          <h1>Sailbot Data</h1>
       </div> -->
       <div id="data-display">
-    	  <div class="row">
-          <div class="col-1"></div>
-          <div id="apparentWind" class="col-3">
+    	  <div>
+          <div></div>
+          <div id="apparentWind">
             <div class="degree">
             	<h6 id="apparentWindAngle" class="font-light">60</h6>
             	<h6 class="font-light">°</h6>
@@ -43,7 +43,7 @@
             <h6 id="apparentWindTitle" class="bot-text font-heavy">Apparent Wind</h6>
           </div>
 
-          <div id="theoreticalWind" class="col-3">
+          <div id="theoreticalWind">
             <div class="degree">
             	<h6 id="theoreticalWindAngle" class="font-light">113</h6>
             	<h6 class="font-light">°</h6>
@@ -56,7 +56,7 @@
             <h6 id="theoreticalWindTitle" class="bot-text font-heavy">Theoretical Wind</h6>
           </div>
 
-          <div id="compass" class="col-3" style="margin-top: 0px;">
+          <div id="compass" style="margin-top: 0px;">
             <div class="north">
     		  	<h6 id="compassNorth" class="font-light">N</h6>
             </div>
@@ -66,48 +66,40 @@
         </div>
 
 <!--         <div class="row">
-          <div class="col-1"></div>
+          <div></div>
 
-          <div id="airtemp" class="col-3">
+          <div id="airtemp">
             <div id="airtempDisp"></div>
             <h6 id="airtempTitle" class="font-heavy">Air Temperature</h6>
           </div>
 
-          <div id="windchill" class="col-3">
+          <div id="windchill">
             <div id="windchillDisp"></div>
             <h6 id="windchillTitle" class="font-heavy">Wind Chill</h6>
           </div>
 
-          <div id="pressure" class="col-3">
+          <div id="pressure">
             <div id="pressureDisp"></div>
             <h6 id="pressureTitle" class="font-heavy">Barometric Pressure</h6>
           </div>       
         </div>  -->
 
-        <div class="row">
-          <div id="coursetrack" class="col-2">
+          <div id="coursetrack">
             <div id="coursetrackDisp"></div>
             <h6 id="coursetrackTitle" class="font-heavy">Course Track Error</h6>
           </div>
-          <div class="col-2"></div>
 
-          <div id="pitchroll" class="col-3">
+          <div id="pitchroll">
             <div id="pitchrollDisp"></div>
             <h6 id="pitchrollTitle" class="font-heavy">Pitch and Roll</h6>
           </div>
 
-          <div class="col-1"></div>
-
-          <div id="speed" class="col-3">
+          <div id="speed">
             <div id="speedDisp"></div>
             <h6 id="speedTitle" class="font-heavy">Ground Speed</h6>
           </div>
-        </div>
 
-        <div class="row">
-      	<div class="col-2"></div>
-
-<!--           <div id="gps" class="col-2">
+<!--           <div id="gps">
             <div id="gpsDisp" class="module center">
             	<div class="labels">
             	  <text>Lat:</text>
@@ -123,9 +115,8 @@
             <h6 id="gpsTitle" class="font-heavy">GPS</h6>
           </div> -->
 
-      	<div class="col-1"></div>
           
-          <div id="gyro" class="col-2">
+          <div id="gyro">
             <div id="gyroDisp" class="module center">
             	<div class="labels">
             	  <text>Phi:</text>
@@ -141,9 +132,8 @@
             <h6 id="gyroTitle" class="font-heavy">Rate Gyro</h6>
           </div>
 
-          <div class="col-1"></div>
 
-          <div id="humidity" class="col-2">
+<!--           <div id="humidity">
       	    <div>
       	      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 350" height="135px">
       		      <image href="../assets/water-drop.svg" transform="translate(-41, 20) scale(2)"/>
@@ -151,8 +141,7 @@
       		    </svg>
             	<h6 id="humidityTitle" class="font-heavy">Rel Humidity</h6>
         	  </div>
-          </div>
-        </div>
+          </div> -->
       </div>
   </div>
 </body>

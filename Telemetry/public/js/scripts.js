@@ -94,11 +94,6 @@ const socketInit = () => {
 
 	// pressure.updateGauge(data.pressure ? data.pressure : 950);
 	
-	/********** GPS **********/
-
-	// document.querySelector('#latitude').innerHTML = data.gps.latitude ? data.gps.latitude : 0;
-	// document.querySelector('#longitude').innerHTML = data.gps.longitude ? data.gps.longitude : 0;
-	// document.querySelector('#altitude').innerHTML = data.gps.altitude ? data.gps.altitude : 0;
 
 	/********** Pitch and Roll **********/
 
@@ -130,7 +125,11 @@ const socketInit = () => {
 
 	/********** Relative Humidity **********/
 
-	document.querySelector('#humidityVal').innerHTML = (data.groundspeed ? data.groundspeed : 0) + '%';
+	// document.querySelector('#humidityVal').innerHTML = (data.groundspeed ? data.groundspeed : 0) + '%';
+
+	/********** GPS **********/
+    console.log(data.gps.latitude, data.gps.longitude);
+    boatPath.getPath().push(new google.maps.LatLng(data.gps.latitude ? data.gps.latitude : 0, data.gps.longitude ? data.gps.longitude : 0));
 
 	});
 };
@@ -174,7 +173,7 @@ const gaugeInit = () => {
 	// 						gaugeUnits: 'MiliBars', 
 	// 						...options});
 
-    coursetrack = new drawGauge({divID: 'coursetrack', 
+    coursetrack = new drawGauge({divID: 'coursetrackDisp', 
                             minVal: 0, 
                             maxVal: 360, 
                             needleVal: 0,
@@ -508,10 +507,7 @@ const initMap = () => {
     });
 
     const mockBoatPathCoords = [
-        { lat: 42.8489, lng: -70.9829 },
-        { lat: 42.8489, lng: -70.9839 },
-        { lat: 42.8479, lng: -70.9839 },
-        { lat: 42.8479, lng: -70.9849 },
+        { lat: 42.849810669147935, lng: -70.98818573987138 }
     ];
 
     const boatSVG = {
@@ -552,9 +548,42 @@ const initMap = () => {
         strokeOpacity: 0,
         map,
     });
-
+    let mock = []
     map.addListener("click", (event) => {
         boatPath.getPath().push(event.latLng);
+        console.log('{ lat: '+ event.latLng.lat() +', lng: '+ event.latLng.lng() +' }');
+        mock.push('{ lat: '+ event.latLng.lat() +', lng: '+ event.latLng.lng() +' }');
+        console.log(mock);
+    });
+
+    const waypoint = {
+            path: 'M -2,0 a 2,2 0 1,0 4,0 a 2,2 0 1,0 -4,0',
+            scale: 3,
+            strokeColor: '#004d00',
+            fillColor: '#00e600',
+            fillOpacity: .5,
+    }
+
+    // waypoint
+    new google.maps.Marker({
+        position: { lat: 42.84780, lng: -70.9849 },
+        icon: waypoint,
+        map,
+        title: 'second',
+    });
+
+    new google.maps.Marker({
+        position: { lat: 42.84780, lng: -70.9809 },
+        icon: waypoint,
+        map,
+        title: 'second',
+    });
+
+    new google.maps.Marker({
+        position: { lat: 42.8499, lng: -70.9829 },
+        icon: waypoint,
+        map,
+        title: 'second',
     });
 }
 
@@ -570,17 +599,4 @@ window.onload = () => {
 	gaugeInit();
     initMap();
 
-    // waypoint
-    setTimeout(() => new google.maps.Marker({
-        position: { lat: 42.8499, lng: -70.9829 },
-        icon: {
-            path: 'M -2,0 a 2,2 0 1,0 4,0 a 2,2 0 1,0 -4,0',
-            scale: 3,
-            strokeColor: '#004d00',
-            fillColor: '#00e600',
-            fillOpacity: .5,
-        },
-        map,
-        title: 'second',
-    }), 500);
 };
