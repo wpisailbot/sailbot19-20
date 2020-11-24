@@ -1,8 +1,11 @@
 import rclpy
 from rclpy.node import Node
+import json
 
 #for now, publish simple string
 from std_msgs.msg import String
+
+
 
 
 class PinIO(Node):
