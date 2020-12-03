@@ -1,6 +1,7 @@
-const express = require('express');
 const http = require('http');
+const express = require('express');
 const socketIO = require('socket.io');
+// const favicon = require('serve-favicon');
 
 const app = express();
 const server = http.createServer(app);
@@ -10,7 +11,7 @@ const port = process.env.PORT || 3000;
 let db = [];
 
 app.use(express.static('public'));
-
+// app.use(favicon('public/assets/favicon.ico'));
 
 // Inits Socket Connection from each client
 io.on('connection', (socket) => {
