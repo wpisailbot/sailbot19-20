@@ -1,40 +1,51 @@
-#include "pb.h"
-#include "pb_common.h"
-#include "pb_encode.h"
-#include "pb_decode.h"
+/**
+ * @file Teensy.ino
+ * @author Irina Lavryonova (ilavryonova@wpi.edu) - 2019/2020
+ * @author Connor Burri (cjburri@wpi.edu) - 2020/2021
+ * @brief File containing the execution code for the teensy embedded within the adjustable trim tab
+ * @version 0.2
+ * @date 2020-11-18
+ * @copyright Copyright (c) 2020 
+ */
+
+// Programmer defined files
 #include "TrimTabMessages.pb.h"
-
-#include <WiFiEsp.h>
-#include "SoftwareSerial.h"
 #include "Constants.h"
-#include <Servo.h>
 
-// Protobuf variables
-uint8_t rx_buffer[32];
-unsigned char tx_buffer[32];
+// Libraries
+#include <WiFiEsp.h>                          //driver code for ESP8266 module
+#include "SoftwareSerial.h"                   //driver code for converting ESP8266 to Serial output
+#include <Servo.h>                            //driver code for operating servo
+#include <IPAddress.h>                        //library to assist in IP addressing (primarily to connect the teensy to the Jetson)
+#include <ArduinoJson.h>                      //library to assist in the serialization and deserialization of JSON documents
+
+// ESP8266 buffers 
+uint8_t rx_buffer[32];                        // receive buffer
+unsigned char tx_buffer[32];                  // transmission buffer
 
 // Wifi variables
-SoftwareSerial ESPSerial(RX2pin, TX2pin); // RX2, TX2
-char ssid[] = "sailbot";                  // Name of the hull network
-char pass[] = "Passphrase123";            // Password to hull network
-int status = WL_IDLE_STATUS;              // the Wifi radio's status
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEA};
-WiFiEspClient client;
-bool connection = false;
-volatile int count = 0; //count to have leds blink
+SoftwareSerial ESPSerial(RX2pin, TX2pin);     // RX2, TX2
+char ssid[] = "sailbothot";                   // Name of the hull network
+char pass[] = "salad123";                     // Password to hull network
+int status = WL_IDLE_STATUS;                  // the Wifi radio's status
+WiFiEspClient client;                         // communication between jetson server and teensy client
+bool connection = false;                      // connection indicator
+volatile int count = 0;                       // count to have leds blink
 
 // Control variables
 volatile int ledState = LOW;
-volatile unsigned long blinkCount = 0; // use volatile for shared variables
-volatile int vIn = 0;                  // Battery voltage
+volatile unsigned long blinkCount = 0;        // use volatile for shared variables
+volatile int vIn = 0;                         // Battery voltage
 volatile int retryCount = 0;
 IntervalTimer LEDtimer;
 IntervalTimer servoTimer;
 volatile int missed_msgs = 0;
 Servo servo;
-volatile float windAngle; // Mapped reading from wind direction sensor on the front of the sail
+volatile float windAngle;                     // Mapped reading from wind direction sensor on the front of the sail
 volatile int32_t control_angle;
 bool readingNow = false;
+
+IPAddress testAddr = IPAddress(10,42,0,1);
 
 int timeSinceLastComm = 0;
 int timeout = 1000;
@@ -52,7 +63,7 @@ void setup()
   ESPSerial.begin(115200);
   // initialize ESP module
   WiFi.init(&ESPSerial);
-  //establishConnection();
+  establishConnection();
 
   pinMode(vInPin, INPUT);
   pinMode(led1Pin, OUTPUT);
@@ -82,88 +93,105 @@ void simpleSendReceive()
     establishConnection();
   } else {
     if(!readingNow){
-      writeProtobuf();
+      writeJson();
     }
     if(readingNow){
-      readProtobuf();
-    }
+      readJson();
+    }3
   }
+  delay(3000);
 }
 
-void readProtobuf()
-{
-  // If there's data available, read a rx_packet
+/* 
+ * @author Connor Burri
+ */
+void readJson(){
+  // determines if there is data available to receive
+  int isData = client.available() > 0 ? 1 : 0;
   int bytes = client.available();
 
-  if (bytes){// Read the bytes into a buffer so that we can decode them
-    for (int i = 0; i < bytes; i++)
-    {
+  // reads the data from the ESP8266
+  if(isData){
+    for(int i = 0; i < bytes; i++){
       rx_buffer[i] = (uint8_t)client.read();
     }
+  }
+
+  // getting the size of the data read from the ESP8266
+  size_t rx_buffer_size = sizeof(rx_buffer)/sizeof(rx_buffer[0]);
+
+  for(int i = 0; i< rx_buffer_size; i++){
+    Serial.print(rx_buffer[i]);
+  }
+  Serial.println("");
+
+  // constructing the JSON to be stored on the stack; this is data is coming from the jetson
+  DynamicJsonDocument responseJSON(256);
+
+  // converting the data from the ESP8266 to a JSON document and storing it
+  DeserializationError err = deserializeJson(responseJSON, rx_buffer, rx_buffer_size);
+
+  // checking to make sure that deserialization performed as expected
+  if(err){
+    Serial.println("DESERIALIZATION FAILED");
+    Serial.println(err.c_str());
+  }
+  else
+  {
+    const char* con = responseJSON["connor"];
+    Serial.println("DESERIALIZATION WORKED");
+    Serial.println(con);
+  }
+
   
-    // Prepare a struct to save the message to
-    TrimState controlAngle = TrimState_init_zero;
-  
-    // Decode the message and save to a struct
-    pb_istream_t stream_rx = pb_istream_from_buffer(rx_buffer, sizeof(rx_buffer));
-    bool status_rx = pb_decode(&stream_rx, TrimState_fields, &controlAngle);
-  
-    // Couldn't decode the message, so want to reconnect
-    if (!status_rx)
-    {
-      // Nothing read, so nothing to do
-      Serial.println("Couldn't decode!");
-      //return;
-    }
-  
-    control_angle = (controlAngle.control_angle-980)*PWMScaler;
-    state = controlAngle.state;
-//    Serial.print("Control angle: ");
-//    Serial.println(control_angle);
-  
-    missed_msgs = 0;
+//  control_angle = (controlAngle.control_angle-980)*PWMScaler;
+//  state = controlAngle.state;
+//
+//  missed_msgs = 0;
     readingNow = false;
     timeSinceLastComm = millis();
-  }
 }
 
-void writeProtobuf()
-{
-  // Prep the message
-  ApparentWind_Trim apparentWind = ApparentWind_Trim_init_zero;
-  size_t message_length;
-
-  // Create a stream that will write to the buffer
-  pb_ostream_t stream_tx = pb_ostream_from_buffer(tx_buffer, sizeof(tx_buffer));
-
-  // Fill in the wind dir
-  apparentWind.apparent_wind = windAngle;
-//  apparentWind.apparent_wind = 3;
-
-//  Serial.print("Wind Angle: ");
-//  Serial.println(windAngle);
+void writeJson(){
+  //prepare the JSON document
+  DynamicJsonDocument json(256);
   
-  // Encode the message
-  bool status_tx = pb_encode(&stream_tx, ApparentWind_Trim_fields, &apparentWind);
-  message_length = stream_tx.bytes_written;
+  //assigning the data
+  json["relative_wind_dir"] = 1; //windAngle; 
 
-  /* Then just check for any errors.. */
-  if (!status_tx)
-  {
-    printf("Encoding failed: %s\n", PB_GET_ERROR(&stream_tx));
-    return;
-  }
-  
-  if(message_length > 0){
-    int data =  client.write(tx_buffer, message_length);
-//    Serial.print("Wrote: ");
-//    Serial.println(data);
-    if(data > 0){
+  //string representation of the JsonDocument
+  String jsonString;
+
+  //serializing the JsonDocument to a JsonString
+  size_t bytesSerialized = serializeJsonPretty(json, jsonString);
+
+  //checking that the data was serialized
+  if(bytesSerialized){
+    //print what is being sent beforehand
+    Serial.println("Sending:");
+    Serial.println(jsonString);
+
+    //send the message over the ESP8266
+    for(int i = 0; i < jsonString.length(); i++){
+      tx_buffer[i] = jsonString.charAt(i);
+    }
+    int dataWritten =  client.write(tx_buffer, bytesSerialized);
+
+    //check to make sure the data was sent to the server
+    if(dataWritten){
       readingNow = true;
       timeSinceLastComm = millis();
     }
+    else{
+      Serial.println("ERROR: ESP8266 FAILED TO SEND TO SERVER");
+    }
+    
+  }
+ else{
+    Serial.println("ERRORFailed to Serialize the data");
   }
 }
+
 
 void establishConnection()
 {
@@ -188,10 +216,14 @@ void establishConnection()
   printWifiStatus();
 
   Serial.println("\nStarting connection to server...");
-  if (client.connect(hullIP, 50000))
+//  if (client.connect(hullIP, 50000))
+  if (client.connect(testAddr, 50000))
   {
-    Serial.println("Connected to server");
+    Serial.println("Connected to server!!!");
     connection = true;
+  }
+  else{
+    Serial.println("Failed to connect to server!");
   }
   Serial.print("Listening on port ");
   Serial.println(50000);
