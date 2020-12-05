@@ -1,17 +1,23 @@
 const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
-// const favicon = require('serve-favicon');
+const bodyParser = require('body-parser');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const port = process.env.PORT || 3000;
 
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
 let db = [];
 
-app.use(express.static('public'));
-// app.use(favicon('public/assets/favicon.ico'));
+app.post('/boat', (req, res) => {
+	console.log(req.body);
+	io.to('clients').emit('updateDash', req.body);
+	res.send(200);
+});
 
 // Inits Socket Connection from each client
 io.on('connection', (socket) => {
