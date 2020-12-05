@@ -41,7 +41,7 @@ The purpose of this is to display the Relevant statistics from the sailbot on a 
 	"pressure": 950 - 1050,
 	"groundspeed": 0 - 25,
 	"gps": {"latitude": "float", "longitude": float, "altitude": "float"},
-	"pitchroll": {"pitch": (-20) - 20, "roll": (-90) - 90,
+	"pitchroll": {"pitch": (-20) - 20, "roll": (-90) - 90},
 	"gyro": {"phi": "float", "theta": "float", "psi": "float"}
 }
 ```
