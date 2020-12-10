@@ -11,7 +11,6 @@ const socketInit = () => {
 
     // Creates callback for when data is recieved from the server (updates all the page components)
 	socket.on('updateDash', (data) => {
-	console.log(data);
 	/********** Apparent Wind **********/
 
 		let appSpeed = (data.apparentWind.speed ? data.apparentWind.speed : 60);
@@ -107,7 +106,6 @@ const socketInit = () => {
         .duration(1000)
         .ease(d3.easeElasticOut, 1, 0.9)
         .attrTween("transform", () => d3.interpolateString('translate(0, '+ (document.querySelector('#pitchIndicator').transform.baseVal[0].matrix.f) +')', 'translate(0, '+ (data.pitchroll.pitch ? data.pitchroll.pitch : 0) +')'));
-    console.log(document.querySelector('#pitchCircle').cy.baseVal.value - 65, data.pitchroll.pitch);
 	// d3.select('#pitchIndicator')
 	// 	.attr('transform', 'translate(0, '+ (data.pitchroll.pitch ? data.pitchroll.pitch : 0) +')');
 
@@ -126,7 +124,6 @@ const socketInit = () => {
 	// document.querySelector('#humidityVal').innerHTML = (data.groundspeed ? data.groundspeed : 0) + '%';
 
 	/********** GPS **********/
-    console.log(data.gps.latitude, data.gps.longitude);
     boatPath.getPath().push(new google.maps.LatLng(data.gps.latitude ? data.gps.latitude : 0, data.gps.longitude ? data.gps.longitude : 0));
 
 	});
