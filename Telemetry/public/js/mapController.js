@@ -1,4 +1,4 @@
-let map, boatPath;
+let map, boatPath, latLines = [], lngLines = [], gridCenters = [], gridCenterPoints = [], debug = false;
 
 const attitash = { lat: 42.8489, lng: -70.9829 };
 const startPathCoords = [{ lat: 42.849810669147935, lng: -70.98818573987138 }];
@@ -24,20 +24,15 @@ const waypoint = {
 const genGridlines = () => {
     const squareRad = 0.001; // 10 meters is 4th decimal places I think? (near the equator it is 11)
 
-    let latLines = [];
-    let lngLines = [];
-
     for (let i = gridCorners.topleft.lng; i <= gridCorners.topright.lng; i += squareRad) {
         latLines.push(new google.maps.Polyline({
             path: [{lat: gridCorners.topleft.lat, lng: i}, {lat: gridCorners.botleft.lat, lng: i}],
-            map
         }));
     }
 
     for (let i = gridCorners.topleft.lat; i >= gridCorners.botleft.lat; i -= squareRad) {
         lngLines.push( new google.maps.Polyline({
             path: [{lat: i, lng:  gridCorners.topleft.lng}, {lat: i, lng:  gridCorners.topright.lng}],
-            map,
         }));
     }
 
@@ -59,8 +54,6 @@ const genGridlines = () => {
         gridIntersects.push(temp);
     });
 
-    let gridCenters = [];
-
     for (let i = 0; i < gridIntersects.length - 1; i++){
         let temp = []
         leftLngLine = gridIntersects[i]
@@ -72,16 +65,31 @@ const genGridlines = () => {
             let botLeftCorner = leftLngLine[j + 1]
             let center = { lat: (topLeftCorner.lat + botLeftCorner.lat)/2,lng: (topLeftCorner.lng + topRightCorner.lng)/2 };
             
-            new google.maps.Marker({
+            gridCenterPoints.push(new google.maps.Marker({
                 position: center,
                 icon: waypoint,
-                map,
                 label: i.toString() + j.toString(),
-            });
+            }));
 
             temp.push({x: i, y: j, lat: center.lat, lng: center.lng});
         }
         gridCenters.push(temp);
+    }
+}
+
+
+const toggleDebug = () => {
+    console.log('debug toggled');
+    if (!debug) {
+        debug = true;
+        gridCenterPoints.forEach(center => {console.log(center);center.setMap(map);});
+        latLines.forEach(line => line.setMap(map));
+        lngLines.forEach(line => line.setMap(map));
+    } else {
+        debug = false;
+        gridCenterPoints.forEach(center => center.setMap(null));
+        latLines.forEach(line => line.setMap(null));
+        lngLines.forEach(line => line.setMap(null));
     }
 }
 
