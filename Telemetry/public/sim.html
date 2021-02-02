@@ -10,9 +10,15 @@
 </head>
 
 <body>
+  <script src="/js/dependencies/d3.min.js" charset="utf-8"></script>
+  <script src="/js/dependencies/d3-simple-slider.min.js"></script>
   <script src="/js/dependencies/socket.io.min.js"></script>	
-  <script type="text/javascript" src="js/boatCode.js"></script>
+  <script type="text/javascript" src="js/simulator/grid.js"></script>
+  <script type="text/javascript" src="js/simulator/astar.js"></script>
+  <script type="text/javascript" src="js/simulator/sim.js"></script>
   <div id="message">Click the button to start sending messages!</div>
   <button id="but" onclick="sendMockMessages()">Send</button>
+  <div><p id="value-simple"></p></div>
+  <div id="slider-simple"></div>
 </body>
 </html>
