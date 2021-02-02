@@ -4,9 +4,9 @@ const nodeWeightMultiplier = 10000;
 
 //globals
 let destination;
+let lowestPath = [];
 let pathsToCheck = [];
 let lowestPathWeight = 999999999;
-let lowestPath = []
 
 
 /*
