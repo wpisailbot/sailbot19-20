@@ -1,18 +1,31 @@
 import serial
 import json
 
-class AirmarReader():
+import rclpy
+from rclpy.node import Node
+
+from std_msgs.msg import String
+
+
+class AirmarReader(Node):
 
     def __init__(self):
-        #open serial port
+        super().__init__('airmar_reader')
         self.serial = serial.Serial('/dev/ttyAMC0')
+        self.publisher_ = self.create_publisher(String, 'airmar_data', 10)
+        timer_period = 0.01  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
 
 
-        #TODO -either make a into a ros node or multithread
-        # - create function to read (in own thread) and return/publish as json.dumps({})
-        
-    def readLineToJson(self, line):
+    def timer_callback(self):
+        msg = String()
+        msg.data = json.dumps(readLineToJson())
+        self.publisher_.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
 
+    def readLineToJson(self):
+
+        line = self.serial.readline()
         tag = line.split(',',1)[0]
         type_code = tag[-3:]
         args = line.split(',')
@@ -21,9 +34,17 @@ class AirmarReader():
         if(type_code == 'ROT'): #rate of turn degrees per minute. negative is to port
             return {"rate-of-turn":args[1]}
         elif(type_code == 'GLL'):
-            return {"Latitude":args[1], 
+            #convert from degree decimal minutes to decimal degrees
+            #dd = d + m/60
+            #lat = math.floor(float(args[1]) / 100) + (float(args[1]) % 100)/60.0
+            #lon = math.floor(float(args[3]) / 100) + (float(args[3]) % 100)/60.0
+            lat_raw = args[1]
+            lat = float(lat_raw[:2]) + float(lat_raw[2:])/60.0
+            lon_raw = args[3]
+            lon = float(lon_raw[:3]) + float(lon_raw[3:])/60.0
+            return {"Latitude":lat, 
                     "Latitude-direction":args[2],
-                    "Longitude":args[3],
+                    "Longitude":lon,
                     "Longitude-direction":args[4]}
         elif(type_code == 'VTG'):
             return {"track-degrees-true":args[1],
@@ -79,3 +100,21 @@ class AirmarReader():
         else:
             raise ValueError("Unknown NEMA code: " + type_code)
             return {}
+    
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    airmar_reader = AirmarReader()
+
+    rclpy.spin(airmar_reader)
+
+    # Destroy the node explicitly
+    # (optional - otherwise it will be done automatically
+    # when the garbage collector destroys the node object)
+    airmar_reader.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
