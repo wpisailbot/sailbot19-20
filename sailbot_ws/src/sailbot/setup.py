@@ -22,7 +22,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'pin_io = sailbot.pin_io:main',
+            'airmar_reader = sailbot.airmar_reader:main',
+            'pwm_controller = sailbot.pwm_controller:main',
+            'serial_rc_receiver = sailbot.serial_rc_receiver:main',
             'control_system = sailbot.control_system:main',
 	    'teensy_comms = sailbot.teensy_comms:main',
 	    'debug_interface = sailbot.debug_interface:main',
