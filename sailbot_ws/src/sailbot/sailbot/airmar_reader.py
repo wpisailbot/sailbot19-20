@@ -19,7 +19,7 @@ class AirmarReader(Node):
 
     def timer_callback(self):
         msg = String()
-        msg.data = json.dumps(readLineToJson())
+        msg.data = json.dumps(self.readLineToJson())
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing: "%s"' % msg.data)
 
