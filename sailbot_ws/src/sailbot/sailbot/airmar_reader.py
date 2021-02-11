@@ -11,7 +11,7 @@ class AirmarReader(Node):
 
     def __init__(self):
         super().__init__('airmar_reader')
-        self.serial = serial.Serial('/dev/ttyAMC0')
+        self.ser = serial.Serial('/dev/ttyAMC0')
         self.publisher_ = self.create_publisher(String, 'airmar_data', 10)
         timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -25,7 +25,7 @@ class AirmarReader(Node):
 
     def readLineToJson(self):
 
-        line = self.serial.readline()
+        line = self.ser.readline()
         tag = line.split(',',1)[0]
         type_code = tag[-3:]
         args = line.split(',')
