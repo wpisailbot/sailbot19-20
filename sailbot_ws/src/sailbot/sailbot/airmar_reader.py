@@ -11,7 +11,7 @@ class AirmarReader(Node):
 
     def __init__(self):
         super().__init__('airmar_reader')
-        self.ser = serial.Serial('/dev/ttyAMC0')
+        self.ser = serial.Serial('/dev/serial/by-id/usb-Maretron_USB100__NMEA_2000_USB_Gateway__1170079-if00')
         self.publisher_ = self.create_publisher(String, 'airmar_data', 10)
         timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
