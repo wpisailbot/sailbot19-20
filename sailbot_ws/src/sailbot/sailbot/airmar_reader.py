@@ -25,7 +25,7 @@ class AirmarReader(Node):
 
     def readLineToJson(self):
 
-        line = self.ser.readline()
+        line = self.ser.readline().decode()
         tag = line.split(',',1)[0]
         type_code = tag[-3:]
         args = line.split(',')
