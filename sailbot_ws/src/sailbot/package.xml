@@ -20,6 +20,6 @@
     <exec_depend>json</exec_depend>
     <exec_depend>enum</exec_depend>
     <exec_depend>requests</exec_depend>
-    <exec_depend>serial</exec_depend>
+    <exec_depend>pyserial</exec_depend>
   </export>
 </package>
