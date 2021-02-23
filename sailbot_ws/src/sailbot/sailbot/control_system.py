@@ -61,10 +61,10 @@ def main(args=None):
     rclpy.init(args=args)
 
     control_system = ControlSystem()
-
+    ittr = 10
     while( rclpy.ok() ):
         print("test")
-        rclpy.spin_once(control_system, timeout_sec=2)
+        rclpy.spin_once(control_system, timeout_sec=.5)
         # now we have new vals from subscribers in:
         # control_system.serial_rc
         # control_system.airmar_data
@@ -75,8 +75,8 @@ def main(args=None):
         # control_system.teensy_control_publisher_.publish()
 
         #TODO ^^implement
-
-        json_str = json.dumps({"channel":10,"angle":30})
+        ittr += 10
+        json_str = json.dumps({"channel":10,"angle":ittr})
         print(json_str)
         message = String()
         message.data = json_str
