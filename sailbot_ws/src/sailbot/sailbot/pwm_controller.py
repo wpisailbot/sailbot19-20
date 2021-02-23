@@ -27,7 +27,7 @@ class PWMController(Node):
         self.execute_pwm(msg)
 
     def execute_pwm(self, msg):
-        jmsg = json.loads(msg)
+        jmsg = json.loads(str(msg.data))
         self.pwm.setRotationAngle(jmsg[channel], jmsg[angle])
 
 
