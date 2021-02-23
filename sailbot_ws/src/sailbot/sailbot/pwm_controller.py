@@ -28,7 +28,8 @@ class PWMController(Node):
 
     def execute_pwm(self, msg):
         jmsg = json.loads(str(msg.data))
-        self.pwm.setRotationAngle(jmsg[channel], jmsg[angle])
+        #print("channel: " + str(jmsg['channel']) + ", angle: " + str(jmsg['angle']))
+        self.pwm.setRotationAngle(jmsg['channel'], jmsg['angle'])
 
 
 def main(args=None):
