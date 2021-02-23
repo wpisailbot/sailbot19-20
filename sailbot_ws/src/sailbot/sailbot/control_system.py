@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-
+import json
 from std_msgs.msg import String
 
 
@@ -63,7 +63,8 @@ def main(args=None):
     control_system = ControlSystem()
 
     while( rclpy.ok() ):
-        rclpy.spin_once(control_system)
+        print("test")
+        rclpy.spin_once(control_system, timeout_sec=2)
         # now we have new vals from subscribers in:
         # control_system.serial_rc
         # control_system.airmar_data
@@ -75,8 +76,11 @@ def main(args=None):
 
         #TODO ^^implement
 
-        msg = json.dumps({"channel":10,"angle":30})
-        control_system.pwm_control_publisher_.publish(msg)
+        json_str = json.dumps({"channel":10,"angle":30})
+        print(json_str)
+        message = String()
+        message.data = json_str
+        control_system.pwm_control_publisher_.publish(message)
         
     
 
