@@ -8,8 +8,8 @@ def generate_launch_description():
 	return LaunchDescription([
 		Node(
 			package='sailbot',
-			node_executable='pin_io',
-			name='pin_io'
+			node_executable='pwm_controller',
+			name='pwm'
 		),
 		Node(
 			package='sailbot',
@@ -25,5 +25,15 @@ def generate_launch_description():
 			package='sailbot',
 			node_executable='debug_interface',
 			name='debug'
+		),
+		Node(
+			package='sailbot',
+			node_executable='airmar_reader',
+			name='airmar'
+		),
+		Node(
+			package='sailbot',
+			node_executable='serial_rc_receiver',
+			name='rc_rcevr'
 		)
 	])
