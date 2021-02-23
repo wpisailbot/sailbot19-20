@@ -74,7 +74,9 @@ def main(args=None):
         # control_system.teensy_control_publisher_.publish()
 
         #TODO ^^implement
-        
+
+        msg = json.dumps({"channel":10,"angle":30})
+        control_system.pwm_control_publisher_.publish(msg)
         
     
 
