@@ -13,6 +13,10 @@ h6 {
 	top: 35px;
 }
 
+.datum {
+	z-index: 3;
+}
+
 
 /* Vector Thingy */
 .degree {
@@ -82,7 +86,7 @@ h6 {
 	overflow: hidden;
 }
 
-#apparentWind{
+/*#apparentWind{
     position: fixed;
     top: 25vh;
     left: 7vw;
@@ -94,23 +98,7 @@ h6 {
     left: 6.5vw;
 }
 
-#compass{
-	position: fixed;
-    /*top: 5vh;*/
-    left: 44.5vw;
-}
 
-#coursetrack{
-	position: fixed;
-	top: 2.5vh;
-    left: 25vw;
-}
-
-#speed{
-	position: fixed;
-	top: 2.5vh;
-    left: 60vw;
-}
 
 #pitchroll{
     position: fixed;
@@ -128,4 +116,4 @@ h6 {
     position: fixed;
     top: 20vh;
     left: 85vw;
-}
+}*/
