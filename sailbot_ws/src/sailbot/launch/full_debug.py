@@ -12,8 +12,8 @@ def generate_launch_description():
 		# output displays callback messages in terminal
 		Node(
 			package='sailbot',
-			node_executable='pin_io',
-			name='pin_io',
+			node_executable='pwm_controller',
+			name='pwm',
 			prefix='gnome-terminal --command',
 			output='screen'
 		),
@@ -35,6 +35,20 @@ def generate_launch_description():
 			package='sailbot',
 			node_executable='debug_interface',
 			name='debug',
+			prefix='gnome-terminal --command',
+			output='screen'
+		),
+		Node(
+			package='sailbot',
+			node_executable='airmar_reader',
+			name='airmar',
+			prefix='gnome-terminal --command',
+			output='screen'
+		),
+		Node(
+			package='sailbot',
+			node_executable='serial_rc_receiver',
+			name='rc_rcevr',
 			prefix='gnome-terminal --command',
 			output='screen'
 		)
