@@ -1,16 +1,23 @@
-const express = require('express');
 const http = require('http');
+const express = require('express');
 const socketIO = require('socket.io');
+const bodyParser = require('body-parser');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const port = process.env.PORT || 3000;
 
-let db = [];
-
+app.use(bodyParser.json());
 app.use(express.static('public'));
 
+let db = [];
+
+app.post('/boat', (req, res) => {
+	console.log(req.body);
+	io.to('clients').emit('updateDash', req.body);
+	res.send(200);
+});
 
 // Inits Socket Connection from each client
 io.on('connection', (socket) => {
