@@ -20,7 +20,7 @@ class AirmarReader():
         new = readLineToJson()
         self.updateVals(new)
         
-def readLineToJson(self):
+    def readLineToJson(self):
 
         try:
             line = self.ser.readline().decode()
