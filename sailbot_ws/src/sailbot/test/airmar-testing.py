@@ -1,14 +1,12 @@
 import serial
 import json
-
-
-from std_msgs.msg import String
+import time
 
 
 class AirmarReader():
 
     def __init__(self):
-        self.serial = serial.Serial('/dev//serial/by-id/usb-Maretron_USB100__NMEA_2000_USB_Gateway__1170079-if00')
+        self.ser = serial.Serial('COM5')
         self.vals = {}
 
     def updateVals(self, update):
@@ -17,7 +15,7 @@ class AirmarReader():
 
 
     def readAndUpdate(self):
-        new = readLineToJson()
+        new = self.readLineToJson()
         self.updateVals(new)
         
     def readLineToJson(self):
@@ -102,44 +100,56 @@ class AirmarReader():
             return({})
 
     def printAll(self):
-        try:
-            print("rate-of-turn" + ": " + str(self.vals["rate-of-turn"]))
-            print("latitude" + ": " + str(self.vals["latitude"]))
-            print("latitude-direction" + ": " + str(self.vals["latitude-direction"]))
-            print("longitude" + ": " + str(self.vals["longitude"]))
-            print("longitude-direction" + ": " + str(self.vals["longitude-direction"]))
-            print("track-degrees-true" + ": " + str(self.vals["track-degrees-true"]))
-            print("track-degrees-magnetic" + ": " + str(self.vals["track-degrees-magnetic"]))
-            print("speed-knots" + ": " + str(self.vals["speed-knots"]))
-            print("speed-kmh" + ": " + str(self.vals["speed-kmh"]))
-            print("outside-temp" + ": " + str(self.vals["outside-temp"]))
-            print("atmospheric-pressure" + ": " + str(self.vals["atmospheric-pressure"]))
-            print("magnetic-sensor-heading" + ": " + str(self.vals["magnetic-sensor-heading"]))
-            print("magnetic-deviation" + ": " + str(self.vals["magnetic-deviation"]))
-            print("magnetic-deviation-direction" + ": " + str(self.vals["magnetic-deviation-direction"]))
-            print("magnetic-variation" + ": " + str(self.vals["magnetic-variation"]))
-            print("magnetic-variation-direction" + ": " + str(self.vals["magnetic-variation-direction"]))
-            print("wind-angle-true" + ": " + str(self.vals["wind-angle-true"]))
-            print("wind-speed-true-knots" + ": " + str(self.vals["wind-speed-true-knots"]))
-            print("wind-speed-true-meters" + ": " + str(self.vals["wind-speed-true-meters"]))
-            print("wind-angle-relative" + ": " + str(self.vals["wind-angle-relative"]))
-            print("wind-speed-relative-meters" + ": " + str(self.vals["wind-speed-relative-meters"]))
-            print("roll" + ": " + str(self.vals["roll"]))
-            print("pitch" + ": " + str(self.vals["pitch"]))
-        except Exception as e:
-            pass
+        keys = """rate-of-turn
+latitude
+latitude-direction
+longitude
+longitude-direction
+track-degrees-true
+track-degrees-magnetic
+speed-knots
+speed-kmh
+outside-temp
+atmospheric-pressure
+magnetic-sensor-heading
+magnetic-deviation
+magnetic-deviation-direction
+magnetic-variation
+magnetic-variation-direction
+wind-angle-true
+wind-speed-true-knots
+wind-speed-true-meters
+wind-angle-relative
+wind-speed-relative-meters
+roll
+pitch"""
+
+        toPrint = ""
+        
+        for i in keys.split("\n"):
+
+            try:
+                toPrint += i + ": " + self.vals[i] + "\n"
+            except Exception:
+                pass
+
+        print(toPrint)
+        #time.sleep(.2)
+       
             
 
     
 
 def main(args=None):
-    
+    print("begining test")
 
     airmar_reader = AirmarReader()
     
     while(True):
         airmar_reader.readAndUpdate()
         airmar_reader.printAll()
-        
+
+if __name__ == '__main__':
+    main()
 
 
