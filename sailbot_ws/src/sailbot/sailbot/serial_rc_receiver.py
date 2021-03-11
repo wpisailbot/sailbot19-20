@@ -31,7 +31,7 @@ class SerialRCReceiver(Node):
         self.bufferOffset = 0
         self.JetsonSerial = serial.Serial(
             port="/dev/ttyTHS1", # RX terminal THS1 (Port 10 on J41 Header)
-            baudrate=91000,
+            baudrate=95000,
             bytesize=serial.EIGHTBITS,
             parity=serial.PARITY_EVEN,
             stopbits=serial.STOPBITS_TWO,
