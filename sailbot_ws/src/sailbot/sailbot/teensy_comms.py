@@ -7,31 +7,15 @@ from enum import Enum
 #for now, publish simple string
 from std_msgs.msg import String
 
-### PINS ###
-HALL_STBD_PIN = "P9_23"
-HALL_PORT_PIN = "P9_15"
-RUDDER_PIN = "P9_14"
-MOV_BAL_PIN = "P9_16"
-MOV_BAL_POT_PIN = "P9_27" # Hardware not implemented, code using this pin not implemented
-
-
-### BOAT VARIABLES ###
-MAX_HEEL_ANGLE = 20 # Max heel angle the boat should ever allow (bigger angle risks capsizing)
-RUDDER_MAX_ANGL = 180 # Max angle the rudder should ever move to
-RUDDER_MIN_ANGL = 0 # Min angle the rudder should ever move to
-MOV_BAL_MAX_ANGL = 180 # This is where the port mangetic switch is
-MOV_BAL_MIN_ANGL = 0 # This is where the stbd mangetic switch is
-MOV_BAL_MAX_SPEED = 15 # Max speed with which the ballast can move
-MOV_BAL_ANGL_TOL = 5 # Tolarance of the movanble ballast angle
-
 ### WIFI VARIABLES ###
 TRIM_IP = '192.168.0.25' # Use this with the actual Trim Tab - it has a static IP
 # TRIM_IP = '127.168.0.1' # Use this with the simulator
 TRIM_PORT = 50000
 BUFFER_SIZE = 50
 # OWN_IP = '192.168.0.21' # This is the actual boat address
-OWN_IP = '10.0.2.15' # This is for local testing. This is whatever address you use to ssh into the board.
+# OWN_IP = '10.0.2.15' # This is for local testing. This is whatever address you use to ssh into the board.
 # OWN_IP = '192.168.0.3' # This is for local testing. This is whatever address you use to ssh into the board.
+OWN_IP = '10.42.0.1'
 
 OWN_PORT = 50051
 
@@ -68,7 +52,7 @@ class TeensyComms(Node):
         self.subscription  # prevent unused variable warning
 
     def timer_callback(self):
-        data = conn.recv(1024)
+        data = self.conn.recv(1024)
         if data:
             data = data.decode('utf-8')
             msg = String()
