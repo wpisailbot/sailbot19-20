@@ -81,9 +81,9 @@ class SerialRCReceiver(Node):
             if self.decodeSBUS():
                 if self.serialData.failsafe:
                     print("Failsafe failed")
-                else if self.serialData.frame_error:
+                elif self.serialData.frame_error:
                     print("Frame error")
-                else if self.serialData.failsafe or self.serialData.frame_error:
+                elif self.serialData.failsafe or self.serialData.frame_error:
                     print("Successful decode")
 
         self.buffer.clear()
