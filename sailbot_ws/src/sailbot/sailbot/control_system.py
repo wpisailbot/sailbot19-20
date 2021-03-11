@@ -147,7 +147,7 @@ def main(args=None):
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(rudderJson))
         """
         toPub = String()
-        string.data = json.dumps({"state":"1"})
+        toPub.data = json.dumps({"state":"1"})
         control_system.teensy_control_publisher_.publish(toPub)
         time.sleep(.5)
 
