@@ -44,7 +44,7 @@ class SerialRCReceiver(Node):
         #get inputs
         self.receive()
         msg = String()
-        msg.data = json.dumps(readLineToJson())
+        msg.data = json.dumps(self.readLineToJson())
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing: "%s"' % msg.data)
 
