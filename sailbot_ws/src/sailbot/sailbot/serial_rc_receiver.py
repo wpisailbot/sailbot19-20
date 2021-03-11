@@ -42,7 +42,7 @@ class SerialRCReceiver(Node):
 
     def timer_callback(self):
         #get inputs
-        receive()
+        self.receive()
         msg = String()
         msg.data = json.dumps(readLineToJson())
         self.publisher_.publish(msg)
