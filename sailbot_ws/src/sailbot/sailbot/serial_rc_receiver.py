@@ -50,11 +50,11 @@ class SerialRCReceiver(Node):
 
     def readLineToJson(self):
         if self.buffer:
-            return {"state1": self.buffer[0],
-                    "ballast": self.buffer[1],
-                    "rudder": self.buffer[2],
-                    "manual": self.buffer[4],
-                    "state2": self.buffer[5]}
+            return {"state1": self.serialData.channels[0],
+                    "ballast": self.serialData.channels[1],
+                    "rudder": self.serialData.channels[2],
+                    "manual": self.serialData.channels[4],
+                    "state2": self.serialData.channels[5]}
         else:#just returning 0 for now but not sure what should actually be sent when no data available
             return {"state1": 0,
                     "ballast": 0,
@@ -81,10 +81,9 @@ class SerialRCReceiver(Node):
             if self.decodeSBUS():
                 if self.serialData.failsafe:
                     print("Failsafe failed")
-                if self.serialData.frame_error:
+                else if self.serialData.frame_error:
                     print("Frame error")
-
-                if self.serialData.failsafe or self.serialData.frame_error:
+                else if self.serialData.failsafe or self.serialData.frame_error:
                     print("Successful decode")
 
         self.buffer.clear()
