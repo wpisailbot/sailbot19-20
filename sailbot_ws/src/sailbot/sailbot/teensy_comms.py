@@ -61,7 +61,7 @@ class TeensyComms(Node):
             self.get_logger().info('Publishing: "%s"' % msg.data)
 
     def listener_callback(self, msg):
-        self.conn.sendall(msg)
+        self.conn.sendall(msg.data)
 
 def main(args=None):
     rclpy.init(args=args)
