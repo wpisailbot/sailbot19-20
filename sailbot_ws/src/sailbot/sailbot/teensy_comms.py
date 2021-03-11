@@ -61,7 +61,7 @@ class TeensyComms(Node):
             self.get_logger().info('Publishing: "%s"' % msg.data)
 
     def listener_callback(self, msg):
-	self.get_logger().info('Sending to teensy: "%s"' % msg.data)
+        self.get_logger().info('Sending to teensy: "%s"' % msg.data)
         self.conn.sendall(msg.data)
 
 def main(args=None):
