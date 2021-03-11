@@ -9,7 +9,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 class SerialChannels:
-    def __init__(self):
+    def __init__(self, CHANNELS):
         self.channels = []
         self.numChannels = CHANNELS - 1
         self.frame_error = 0
@@ -36,7 +36,7 @@ class SerialRCReceiver(Node):
             parity=serial.PARITY_EVEN,
             stopbits=serial.STOPBITS_TWO,
         )
-        self.serialData = SerialChannels()
+        self.serialData = SerialChannels(self.CHANNELS)
         time.sleep(1)#let port initialize
 
 
