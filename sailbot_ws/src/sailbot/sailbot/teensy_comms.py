@@ -46,7 +46,7 @@ class TeensyComms(Node):
         #create subscriber to teensy commands topic
         self.subscription = self.create_subscription(
             String,
-            'teensy_commands',
+            'teensy_control',
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
