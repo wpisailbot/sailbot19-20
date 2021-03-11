@@ -94,7 +94,7 @@ class SerialRCReceiver(Node):
         if (self.buffer[0] != 0x0f):
             print("Incorrect start bit")
             return False
-        if (self.buffer[BUFFER_LENGTH - 1] != 0x00):
+        if (self.buffer[self.BUFFER_LENGTH - 1] != 0x00):
             print("Incorrect stop bit")
             return False
             # print("good bit")
