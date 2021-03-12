@@ -46,7 +46,7 @@ class TeensyComms(Node):
         #create subscriber to teensy commands topic
         self.subscription = self.create_subscription(
             String,
-            'teensy_commands',
+            'teensy_control',
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
@@ -61,7 +61,8 @@ class TeensyComms(Node):
             self.get_logger().info('Publishing: "%s"' % msg.data)
 
     def listener_callback(self, msg):
-        self.conn.sendall(msg)
+        self.get_logger().info('Sending to teensy: "%s"' % msg.data)
+        self.conn.sendall(msg.data.encode())
 
 def main(args=None):
     rclpy.init(args=args)

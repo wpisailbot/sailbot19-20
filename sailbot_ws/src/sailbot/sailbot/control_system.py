@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 import json
 from std_msgs.msg import String
+import time
 
 
 class ControlSystem(Node):
@@ -130,7 +131,7 @@ def main(args=None):
         # control_system.teensy_control_publisher_.publish()
 
         #TODO ^^implement
-
+        """
         inRC = True
         if(inRC):
             control_system.findTrimTabState(control_system.airmar_data["wind-angle-relative"])
@@ -144,7 +145,11 @@ def main(args=None):
                 ballastAngle = 80
             ballastJson = {"channel" : "4", "angle" : rudderAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(rudderJson))
-    
+        """
+        toPub = String()
+        toPub.data = json.dumps({"state":"1"})
+        control_system.teensy_control_publisher_.publish(toPub)
+        time.sleep(.5)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
