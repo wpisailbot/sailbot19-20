@@ -100,8 +100,8 @@ class ControlSystem(Node):
         
 
             
-    def makeJsonString(self, json):
-        json_str = json.dumps(json)
+    def makeJsonString(self, jsonMsg):
+        json_str = json.dumps(jsonMsg)
         message = String()
         message.data = json_str
         return message
@@ -145,9 +145,9 @@ def main(args=None):
             rudderJson = {"channel" : "8", "angle" : rudderAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(rudderJson))
             ballastAngle = 0
-            if(control_system.serial_rc["ballast"] > 1100):
+            if(control_system.serial_rc["ballast"] > 1200):
                 ballastAngle = 110
-            elif(control_system.serial_rc["ballast"] < 900):
+            elif(control_system.serial_rc["ballast"] < 800):
                 ballastAngle = 80
             ballastJson = {"channel" : "12", "angle" : ballastAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(ballastJson))
