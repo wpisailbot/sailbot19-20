@@ -94,7 +94,9 @@ def main(args=None):
     rclpy.init(args=args)
 
     debug_interface = DebugInterface()
-
+    #testing
+    #requests.post(url, data=json.dumps({"A":"b"}), headers=Headers)
+    #r = requests.post('http://192.168.17.20:3000/boat', json={"key": "value"})
     rclpy.spin(debug_interface)
     
 
