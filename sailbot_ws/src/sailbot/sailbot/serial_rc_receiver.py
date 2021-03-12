@@ -49,14 +49,14 @@ class SerialRCReceiver(Node):
         self.get_logger().info('Publishing: "%s"' % msg.data)
 
     def readLineToJson(self):
-        if self.buffer:
-            return {"state1": self.serialData.channels[0],
-                    "ballast": self.serialData.channels[1],
-                    "rudder": self.serialData.channels[2],
-                    "manual": self.serialData.channels[4],
-                    "state2": self.serialData.channels[5]}
-        else:#just returning 0 for now but not sure what should actually be sent when no data available
-            return {"state1": 0,
+        #if self.buffer:
+        return {"state1": self.serialData.channels[0],
+                "ballast": self.serialData.channels[1],
+                "rudder": self.serialData.channels[2],
+                "manual": self.serialData.channels[4],
+                "state2": self.serialData.channels[5]}
+        #else:#just returning 0 for now but not sure what should actually be sent when no data available
+            #return {"state1": 0,
                     "ballast": 0,
                     "rudder": 0,
                     "manual": 0,
