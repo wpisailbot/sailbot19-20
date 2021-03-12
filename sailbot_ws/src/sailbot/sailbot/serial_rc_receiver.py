@@ -57,10 +57,10 @@ class SerialRCReceiver(Node):
                     "state2": self.serialData.channels[5]}
         else:#just returning 0 for now but not sure what should actually be sent when no data available
             return {"state1": 0,
-                    "ballast": 0,
-                    "rudder": 0,
-                    "manual": 0,
-                    "state2": 0}
+                    "ballast": 892,
+                    "rudder": 934,
+                    "manual": 1130,
+                    "state2": 992}
 
 
     def receive(self):
