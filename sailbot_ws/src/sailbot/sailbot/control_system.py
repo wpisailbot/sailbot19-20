@@ -131,10 +131,16 @@ def main(args=None):
         # control_system.teensy_control_publisher_.publish()
 
         #TODO ^^implement
-        """
+        
         inRC = True
         if(inRC):
-            control_system.findTrimTabState(control_system.airmar_data["wind-angle-relative"])
+            if(float(control_system.serial_rc["state1"]) < 400):
+                #manual
+                manualAngle = ((float(control_system.serial_rc["state1"]) / 2000) * 86) + 72
+                toPub = control_system.makeJsonString({"state":"5","angle":manualAngle})
+                control_system.teensy_control_publisher_.publish(toPub)
+            else:
+                control_system.findTrimTabState(control_system.airmar_data["wind-angle-relative"])
             rudderAngle = (float(control_system.serial_rc["rudder"]) / 2000 * 90) + 25
             rudderJson = {"channel" : "4", "angle" : rudderAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(rudderJson))
@@ -145,11 +151,8 @@ def main(args=None):
                 ballastAngle = 80
             ballastJson = {"channel" : "4", "angle" : rudderAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(rudderJson))
-        """
-        toPub = String()
-        toPub.data = json.dumps({"state":"1"})
-        control_system.teensy_control_publisher_.publish(toPub)
-        time.sleep(.5)
+        
+
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
