@@ -67,7 +67,7 @@ class ControlSystem(Node):
             self.teensy_status[i] = msg_dict[i]
 
 
-    def findTrimTabState(relativeWind):
+    def findTrimTabState(self, relativeWind):
         #check we have new wind
         if(relativeWind == self.lastWinds[len(self.lastWinds) -1]):
             return       
@@ -100,8 +100,8 @@ class ControlSystem(Node):
         
 
             
-    def makeJsonString(self, json):
-        json_str = json.dumps(json)
+    def makeJsonString(self, jsonMsg):
+        json_str = json.dumps(jsonMsg)
         message = String()
         message.data = json_str
         return message
@@ -136,18 +136,19 @@ def main(args=None):
         if(inRC):
             if(float(control_system.serial_rc["state1"]) < 400):
                 #manual
-                manualAngle = ((float(control_system.serial_rc["state1"]) / 2000) * 86) + 72
+                manualAngle = int((float(control_system.serial_rc["manual"]) / 2000) * 86) + 72
                 toPub = control_system.makeJsonString({"state":"5","angle":manualAngle})
                 control_system.teensy_control_publisher_.publish(toPub)
             else:
+		#print(control_system.airmar_data["wind-angle-relative"])
                 control_system.findTrimTabState(control_system.airmar_data["wind-angle-relative"])
             rudderAngle = (float(control_system.serial_rc["rudder"]) / 2000 * 90) + 25
             rudderJson = {"channel" : "8", "angle" : rudderAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(rudderJson))
             ballastAngle = 0
-            if(control_system.serial_rc["ballast"] > 1100):
+            if(control_system.serial_rc["ballast"] > 1200):
                 ballastAngle = 110
-            elif(control_system.serial_rc["ballast"] < 900):
+            elif(control_system.serial_rc["ballast"] < 800):
                 ballastAngle = 80
             ballastJson = {"channel" : "12", "angle" : ballastAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(ballastJson))
