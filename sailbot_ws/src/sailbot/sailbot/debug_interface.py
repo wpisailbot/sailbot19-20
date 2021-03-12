@@ -8,7 +8,7 @@ from std_msgs.msg import String
 
 # Website URL and header #
 ip = '192.168.17.20'
-url = ip + ':3000/boat'
+url = 'http://' + ip + ':3000/boat'
 Headers = {'Content-type': 'application/json'}
 
 
