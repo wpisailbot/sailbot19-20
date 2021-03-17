@@ -14,6 +14,7 @@
     "d3-simple-slider": "^1.10.2",
     "express": "^4.17.1",
     "http": "0.0.1-security",
+    "mongodb": "^3.6.5",
     "nodemon": "^2.0.6",
     "serve-favicon": "^2.5.0",
     "socket.io": "^3.0.0"
