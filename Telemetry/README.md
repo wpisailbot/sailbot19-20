@@ -21,7 +21,7 @@ Both Devices must have ethernet power splitters, there is a 12 volt barrel jack 
 #### Network Configuration
 Must set all of the correct ip address
 - Windows: Change using the [changer_digi program](http://ftp1.digi.com/support/utilities/changer_digi.zip) program for both to have a 255.255.255.0 subnet mask and the correct ip, and you must go to the network and sharing center, select the ethernet network interface and set all of the IPv4 addresses to 192.168.17.18 (there are 2 places to do this and you might have to do both and restart, I don't know why it worked like this)
-- Jetson: set the ip and mask to the correct ones (mask the same ip is 192.168.17.17) "sudo ifconfig eth0 192.168.17.17 netmask 255.255.255.0"
+- Jetson: set the ip and mask to the correct ones (mask the same ip is 192.168.17.17) "sudo ifconfig eth0 192.168.17.17 netmask 255.255.255.0 up"
 
 ##### Testing
 - Just "ping 192.168.17.{17 or 18}" from bash or unix to see if they can hit eachother
