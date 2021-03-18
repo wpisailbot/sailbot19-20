@@ -9,3 +9,5 @@ The following have projects are complete
 - [X] Debug Telemetry Interface
 - [X] ROS Nodes for Control
 - [ ] Autonomous Algorithms
+- [ ] Trim Tab Housing
+- [ ] Computer Vision
