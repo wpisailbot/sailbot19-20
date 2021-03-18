@@ -133,15 +133,19 @@ def main(args=None):
         #TODO ^^implement
         
         inRC = True
-        if(inRC):
+        if(len(control_system.serial_rc) < 2):
+            pass #don't have rc values
+        elif(inRC):
             if(float(control_system.serial_rc["state1"]) < 400):
                 #manual
                 manualAngle = int((float(control_system.serial_rc["manual"]) / 2000) * 86) + 72
                 toPub = control_system.makeJsonString({"state":"5","angle":manualAngle})
                 control_system.teensy_control_publisher_.publish(toPub)
-            else:
+            elif("wind-angle-relative" in control_system.airmar_data ):
 		#print(control_system.airmar_data["wind-angle-relative"])
                 control_system.findTrimTabState(control_system.airmar_data["wind-angle-relative"])
+            else:
+                print("No wind angle values")
             rudderAngle = (float(control_system.serial_rc["rudder"]) / 2000 * 90) + 25
             rudderJson = {"channel" : "8", "angle" : rudderAngle}
             control_system.pwm_control_publisher_.publish(control_system.makeJsonString(rudderJson))
